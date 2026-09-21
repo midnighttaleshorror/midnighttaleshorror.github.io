@@ -270,6 +270,16 @@
     *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
   }
 
+
+  /* ---------- news items (dynamic from data.json) ---------- */
+  .news-list{ display:flex; flex-direction:column; gap:28px; padding:0 6vw; }
+  .news-item{ display:grid; grid-template-columns:minmax(200px,300px) 1fr; gap:26px; align-items:start; }
+  .news-item .art-card{ width:100%; }
+  .news-item.no-img{ grid-template-columns:1fr; }
+  .news-body h3{ font-size:1.5rem; font-weight:600; margin-bottom:12px; }
+  .news-body p{ color:var(--ink-dim); font-size:1.02rem; line-height:1.7; white-space:pre-line; border-left:2px solid var(--tech-dim); padding-left:16px; max-width:680px; }
+  @media (max-width:640px){ .news-item{ grid-template-columns:1fr; } }
+
   /* ---------- intro / welcome screen ---------- */
   #intro-screen{
     position:fixed; inset:0; z-index:100; background:var(--bg-0);
@@ -370,13 +380,7 @@
     <h2>News</h2>
     <div class="rule"></div>
   </div>
-  <p class="gallery-note">
-  DARK PHOENIX: GODFALL — Season 2 is Coming Soon.
-The story continues as Shrikant’s quest for Vrinda’s resurrection awakens a new darkness.
-New powers, deeper secrets, and a dangerous conflict with Arrow are about to begin.
-The Godfall is coming — stay tuned for the next chapter.
-  </p>
-  <div class="gallery-grid" id="newsGrid"></div>
+  <div class="news-list" id="newsGrid"></div>
 </section>
 
 <section id="gallery" class="gallery">
@@ -515,75 +519,86 @@ The Godfall is coming — stay tuned for the next chapter.
   }
   tick();
 
-  // ---- news / season 2 posters ----
-  const newsItems = [
-    { title:'Season 2 — Coming Soon', img:'s2.png' },
-  ];
-  const newsGrid = document.getElementById('newsGrid');
-  newsGrid.innerHTML = newsItems.map((n)=>`
-    <div class="art-card">
-      <img src="${n.img}" alt="${n.title}">
-      <div class="tag">${n.title}</div>
-    </div>
-  `).join('');
+  // ---- content: loaded from data.json (edited via admin.html) ----
+  const DEFAULT_DATA = {
+    news:[{ title:'Season 2 — Coming Soon', img:'s2.png',
+      text:'DARK PHOENIX: GODFALL — Season 2 is Coming Soon.\nThe story continues as Shrikant’s quest for Vrinda’s resurrection awakens a new darkness.\nNew powers, deeper secrets, and a dangerous conflict with Arrow are about to begin.\nThe Godfall is coming — stay tuned for the next chapter.' }],
+    gallery:[
+      { title:'Shrikant', img:'1.png' }, { title:'Vrinda', img:'2.png' },
+      { title:'Professor Smith', img:'3.png' }, { title:'Arrow', img:'4.png' },
+      { title:'Mira', img:'5.png' }, { title:'Luciana', img:'6.png' }, { title:'Aman', img:'7.png' }
+    ],
+    series:[
+      { title:'Dark Phoenix Ka Punar Janam', genre:'Episode 1', link:'https://youtu.be/z_8upLnRWps' },
+      { title:'Pach Core Ka Rahasya', genre:'Episode 2', link:'https://youtu.be/EMSTWeN7AVE' },
+      { title:'Hydra Ki Talaash', genre:'Episode 3', link:'https://youtu.be/gCULg_GukWc' },
+      { title:'Thunderbird Ka Jagran', genre:'Episode 4', link:'https://youtu.be/5DUibqj-ChE' },
+      { title:'The Core of Destruction', genre:'Episode 5', link:'https://youtu.be/tPJE9atDQdI' }
+    ],
+    songs:[
+      { title:'Dark Phoenix Rising', genre:'Theme Song', file:'Dark Phoenix Rising.mp3' },
+      { title:'ARROW The Dark Hunter', genre:'Battle Theme', file:'ARROW The Dark Hunter.mp3' },
+      { title:'Rise of the Shrikant', genre:'Character Theme', file:'Rise of the Shrikant.mp3' }
+    ]
+  };
 
-  // ---- gallery cards ----
-  const artItems = [
-    { title:'Shrikant',    img:'1.png' },
-    { title:'Vrinda',   img:'2.png' },
-    { title:'Professor Smith', img:'3.png' },
-    { title:'Arrow',   img:'4.png' },
-    { title:'Mira',  img:'5.png' },
-    { title:'Luciana',  img:'6.png' },
-    { title:'Aman',  img:'7.png' },
-  ];
-  const grid = document.getElementById('galleryGrid');
-  grid.innerHTML = artItems.map((a)=>`
-    <div class="art-card">
-      <img src="${a.img}" alt="${a.title}">
-      <div class="tag">${a.title}</div>
-    </div>
-  `).join('');
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const safeLink = u => /^https?:\/\//i.test(u || '') ? u : '#';
 
-  // ---- series list ----
-  const series = [
-    { title:'Dark Phoenix Ka Punar Janam',     genre:'Episode 1', link:'https://youtu.be/z_8upLnRWps' },
-    { title:'Pach Core Ka Rahasya',      genre:'Episode 2', link:'https://youtu.be/EMSTWeN7AVE' },
-    { title:'Hydra Ki Talaash',        genre:'Episode 3',      link:'https://youtu.be/gCULg_GukWc' },
-    { title:'Thunderbird Ka Jagran',        genre:'Episode 4',       link:'https://youtu.be/5DUibqj-ChE' },
-    { title:'The Core of Destruction',        genre:'Episode 5',    link:'https://youtu.be/tPJE9atDQdI' },
-  ];
-  const list = document.getElementById('seriesList');
-  list.innerHTML = series.map((s,i)=>`
-    <li>
-      <span class="series-num">${String(i+1).padStart(2,'0')}</span>
-      <span class="series-title">${s.title}</span>
-      <span class="series-genre">${s.genre}</span>
-      <a class="series-status" href="${s.link}" target="_blank" rel="noopener">WATCH NOW</a>
-    </li>
-  `).join('');
-
-  // ---- songs list ----
-  // Upload the mp3 files to the same folder as this index.html (in your GitHub repo),
-  // and keep the filenames exactly as written below in file: (matching upper/lowercase and spaces)
-  const songs = [
-    { title:'Dark Phoenix Rising',   genre:'Theme Song',      file:'Dark Phoenix Rising.mp3' },
-    { title:'ARROW The Dark Hunter', genre:'Battle Theme',    file:'ARROW The Dark Hunter.mp3' },
-    { title:'Rise of the Shrikant',  genre:'Character Theme', file:'Rise of the Shrikant.mp3' },
-  ];
+  const newsGrid  = document.getElementById('newsGrid');
+  const grid      = document.getElementById('galleryGrid');
+  const list      = document.getElementById('seriesList');
   const songsList = document.getElementById('songsList');
-  songsList.innerHTML = songs.map((s,i)=>`
-    <li>
-      <span class="series-num">${String(i+1).padStart(2,'0')}</span>
-      <span class="series-title">${s.title}</span>
-      <span class="series-genre">${s.genre}</span>
-      <a class="song-status" href="#" data-src="${encodeURI(s.file)}">PLAY NOW</a>
-      <a class="song-download" href="${encodeURI(s.file)}" download="${s.file}">
-        <svg viewBox="0 0 24 24"><path d="M12 3v10.5m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
-        DOWNLOAD
-      </a>
-    </li>
-  `).join('');
+
+  function renderSite(d){
+    // news
+    newsGrid.innerHTML = (d.news || []).map(n => `
+      <article class="news-item ${n.img ? '' : 'no-img'}">
+        ${n.img ? `<div class="art-card"><img src="${esc(encodeURI(n.img))}" alt="${esc(n.title)}"></div>` : ''}
+        <div class="news-body">
+          <h3>${esc(n.title)}</h3>
+          ${n.text ? `<p>${esc(n.text)}</p>` : ''}
+        </div>
+      </article>
+    `).join('');
+
+    // gallery
+    grid.innerHTML = (d.gallery || []).map(a => `
+      <div class="art-card">
+        <img src="${esc(encodeURI(a.img))}" alt="${esc(a.title)}">
+        <div class="tag">${esc(a.title)}</div>
+      </div>
+    `).join('');
+
+    // series
+    list.innerHTML = (d.series || []).map((s,i) => `
+      <li>
+        <span class="series-num">${String(i+1).padStart(2,'0')}</span>
+        <span class="series-title">${esc(s.title)}</span>
+        <span class="series-genre">${esc(s.genre)}</span>
+        <a class="series-status" href="${esc(safeLink(s.link))}" target="_blank" rel="noopener">WATCH NOW</a>
+      </li>
+    `).join('');
+
+    // songs
+    songsList.innerHTML = (d.songs || []).map((s,i) => `
+      <li>
+        <span class="series-num">${String(i+1).padStart(2,'0')}</span>
+        <span class="series-title">${esc(s.title)}</span>
+        <span class="series-genre">${esc(s.genre)}</span>
+        <a class="song-status" href="#" data-src="${esc(encodeURI(s.file))}">PLAY NOW</a>
+        <a class="song-download" href="${esc(encodeURI(s.file))}" download="${esc(s.file.split('/').pop())}">
+          <svg viewBox="0 0 24 24"><path d="M12 3v10.5m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
+          DOWNLOAD
+        </a>
+      </li>
+    `).join('');
+  }
+
+  fetch('data.json?t=' + Date.now(), { cache:'no-store' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(renderSite)
+    .catch(() => renderSite(DEFAULT_DATA));
 
   // A single audio player — only one song plays at a time; clicking a button toggles play/pause
   (function(){
