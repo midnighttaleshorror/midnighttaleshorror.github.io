@@ -214,6 +214,10 @@
   function isNetworkError(e){
     return e instanceof TypeError || /failed to fetch|networkerror|load failed/i.test(e && e.message || '');
   }
+  function networkHelpWith(e){
+    const detail = e && (e.name || 'Error') + ': ' + (e.message || '');
+    return NETWORK_HELP + '\n\n(Technical detail: ' + detail + ')';
+  }
 
   let toastTimer;
   function toast(msg, bad){
@@ -237,7 +241,8 @@
   const state = { data:null, tab:'news' };
 
   function api(path, opts = {}){
-    return fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/${path}`, {
+    const base = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}`;
+    return fetch(path ? `${base}/${path}` : base, {
       cache:'no-store',
       ...opts,
       headers:{
@@ -530,7 +535,7 @@
       toast('Saved ✓');
     }catch(e){
       console.error(e);
-      toast(isNetworkError(e) ? NETWORK_HELP : (e.message || 'Something went wrong'), true);
+      toast(isNetworkError(e) ? networkHelpWith(e) : (e.message || 'Something went wrong'), true);
     }finally{ unbusy(); }
   }
 
@@ -543,7 +548,7 @@
         if(i < 0 || j < 0 || j >= l.length) return;
         [l[i], l[j]] = [l[j], l[i]];
       }, `Admin: reorder ${type}`);
-    }catch(e){ toast(isNetworkError(e) ? NETWORK_HELP : e.message, true); }
+    }catch(e){ toast(isNetworkError(e) ? networkHelpWith(e) : e.message, true); }
     finally{ unbusy(); }
   }
   async function remove(type, id){
@@ -560,7 +565,7 @@
       }, `Admin: delete ${type}`);
       await cleanupFiles(paths);
       toast('Deleted ✓');
-    }catch(e){ toast(isNetworkError(e) ? NETWORK_HELP : e.message, true); }
+    }catch(e){ toast(isNetworkError(e) ? networkHelpWith(e) : e.message, true); }
     finally{ unbusy(); }
   }
 
@@ -605,7 +610,7 @@
         repo: $('#repo').value.trim(), branch: $('#branch').value.trim() || 'main'
       }, $('#remember').checked);
     }catch(ex){
-      err.textContent = isNetworkError(ex) ? NETWORK_HELP : (ex.message || 'Could not log in');
+      err.textContent = isNetworkError(ex) ? networkHelpWith(ex) : (ex.message || 'Could not log in');
     }
     finally{ btn.disabled = false; btn.textContent = 'Log in'; }
   });
@@ -641,7 +646,7 @@
       $('#owner').value = c.owner; $('#repo').value = c.repo; $('#branch').value = c.branch;
       busy('Logging in…');
       await enter(c, !!localStorage.getItem(STORE_KEY));
-    }catch(ex){ $('#loginErr').textContent = isNetworkError(ex) ? NETWORK_HELP : (ex.message || ''); }
+    }catch(ex){ $('#loginErr').textContent = isNetworkError(ex) ? networkHelpWith(ex) : (ex.message || ''); }
     finally{ unbusy(); }
   })();
 })();
