@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
 <title>Admin Panel | Dark Phoenix</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg-0:#07070a; --bg-1:#0f0a0d; --panel:#141014;
@@ -19,12 +19,12 @@
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
     background:var(--bg-0); color:var(--ink);
-    font-family:'Hind Siliguri','Rajdhani',sans-serif; font-size:16px; line-height:1.5;
+    font-family:'Rajdhani',sans-serif; font-size:16px; line-height:1.5;
     min-height:100vh;
     background-image:radial-gradient(ellipse 60% 30% at 50% -5%, rgba(255,90,31,0.22), transparent 60%);
     background-repeat:no-repeat;
   }
-  h1,h2,h3,.brand{font-family:'Chakra Petch','Hind Siliguri',sans-serif;}
+  h1,h2,h3,.brand{font-family:'Chakra Petch',sans-serif;}
   button,input,textarea{font:inherit; color:inherit;}
   button{cursor:pointer;}
   :focus-visible{outline:2px solid var(--tech-1); outline-offset:2px;}
@@ -51,7 +51,7 @@
   .check{ display:flex; align-items:center; gap:8px; margin-top:16px; color:var(--ink-dim); font-size:0.92rem; }
   .check input{ width:auto; }
   .hint{ font-size:0.82rem; color:var(--ink-dim); margin-top:6px; }
-  .err{ color:var(--danger); margin-top:14px; font-size:0.92rem; min-height:1.2em; }
+  .err{ color:var(--danger); margin-top:14px; font-size:0.92rem; min-height:1.2em; white-space:pre-line; }
 
   .btn{
     border:1px solid var(--line); background:transparent; border-radius:6px;
@@ -64,6 +64,7 @@
   .btn.danger:hover{ background:rgba(255,77,94,0.12); border-color:var(--danger); }
   .btn.full{ width:100%; margin-top:20px; padding:12px; }
   .btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .link-btn{ background:none; border:none; color:var(--tech-1); text-decoration:underline; padding:0; font-size:0.85rem; }
 
   /* ---------- app ---------- */
   header{
@@ -72,7 +73,7 @@
   }
   .brand{ font-weight:700; letter-spacing:0.03em; }
   .brand span{ color:var(--ember-1); }
-  .brand small{ display:block; font-family:'Hind Siliguri',sans-serif; font-weight:400; color:var(--ink-dim); font-size:0.78rem; letter-spacing:0; }
+  .brand small{ display:block; font-family:'Rajdhani',sans-serif; font-weight:400; color:var(--ink-dim); font-size:0.78rem; letter-spacing:0; }
   .head-actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
   .head-actions a.btn{ text-decoration:none; display:inline-block; }
 
@@ -145,11 +146,11 @@
 <div id="login">
   <form class="login-card" id="loginForm" autocomplete="off">
     <h1>DARK <span>PHOENIX</span></h1>
-    <p class="sub">অ্যাডমিন প্যানেল — শুধু আপনার জন্য</p>
+    <p class="sub">Admin panel — for you only</p>
 
     <label for="token">GitHub Token</label>
     <input type="password" id="token" required placeholder="github_pat_...">
-    <p class="hint">Token তৈরির নিয়ম আমার মেসেজে দেওয়া আছে। এটা কাউকে দেবেন না।</p>
+    <p class="hint">See my earlier message for how to create a token. Never share it with anyone.</p>
 
     <div class="row2">
       <div>
@@ -164,9 +165,10 @@
     <label for="repo">Repository</label>
     <input type="text" id="repo" value="midnighttaleshorror.github.io" required>
 
-    <label class="check"><input type="checkbox" id="remember" checked> এই ফোন/ব্রাউজারে মনে রাখো</label>
+    <label class="check"><input type="checkbox" id="remember" checked> Remember on this phone/browser</label>
     <p class="err" id="loginErr"></p>
-    <button class="btn primary full" type="submit" id="loginBtn">লগইন</button>
+    <button class="btn primary full" type="submit" id="loginBtn">Log in</button>
+    <p class="hint" style="margin-top:14px;">Trouble logging in? <button type="button" class="link-btn" id="testConn">Test connection</button></p>
   </form>
 </div>
 
@@ -175,20 +177,20 @@
   <header>
     <div class="brand">DARK <span>PHOENIX</span> <small id="repoLabel"></small></div>
     <div class="head-actions">
-      <a class="btn" id="viewSite" href="./" target="_blank" rel="noopener">সাইট দেখুন</a>
-      <button class="btn" id="logout" type="button">লগআউট</button>
+      <a class="btn" id="viewSite" href="./" target="_blank" rel="noopener">View site</a>
+      <button class="btn" id="logout" type="button">Log out</button>
     </div>
   </header>
 
   <main>
     <div class="tabs" role="tablist" id="tabs"></div>
     <div id="panel"></div>
-    <p class="footer-note">সেভ করার পর সাইটে পরিবর্তন দেখাতে সাধারণত ১–২ মিনিট লাগে (GitHub Pages আপডেট হওয়ার সময়)। না দেখালে পেজ রিফ্রেশ করুন।</p>
+    <p class="footer-note">After saving, changes usually take 1–2 minutes to show on the live site (GitHub Pages needs to rebuild). Refresh the page if you don't see them yet.</p>
   </main>
 </div>
 
 <div id="modalRoot"></div>
-<div id="busy" class="hidden"><div class="spin"></div><div id="busyMsg">অপেক্ষা করুন…</div></div>
+<div id="busy" class="hidden"><div class="spin"></div><div id="busyMsg">Please wait…</div></div>
 <div id="toast" class="hidden" role="status"></div>
 
 <script>
@@ -201,6 +203,18 @@
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   const encPath = p => p.split('/').map(encodeURIComponent).join('/');
 
+  const NETWORK_HELP =
+    'Could not reach GitHub. This is almost always a network/browser setting, not the panel itself. Try these, in order:\n' +
+    '1. Turn off Chrome "Data Saver" / "Lite mode" (⋮ menu → Settings → Data Saver)\n' +
+    '2. Turn off any VPN or ad-blocker\n' +
+    '3. Switch networks: WiFi ↔ mobile data\n' +
+    '4. Open https://api.github.com directly in this browser — if that also fails to load, your network is blocking it\n' +
+    '5. Try a different browser';
+
+  function isNetworkError(e){
+    return e instanceof TypeError || /failed to fetch|networkerror|load failed/i.test(e && e.message || '');
+  }
+
   let toastTimer;
   function toast(msg, bad){
     const t = $('#toast');
@@ -208,7 +222,7 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.add('hidden'), bad ? 6000 : 3500);
   }
-  function busy(msg){ $('#busyMsg').textContent = msg || 'অপেক্ষা করুন…'; $('#busy').classList.remove('hidden'); }
+  function busy(msg){ $('#busyMsg').textContent = msg || 'Please wait…'; $('#busy').classList.remove('hidden'); }
   function unbusy(){ $('#busy').classList.add('hidden'); }
 
   /* ---------- default data (used only if data.json doesn't exist yet) ---------- */
@@ -237,9 +251,9 @@
   async function apiErr(r){
     let m = ''; try{ m = (await r.json()).message || ''; }catch(_){}
     const e = new Error(m || ('HTTP ' + r.status)); e.status = r.status;
-    if(r.status === 401) e.message = 'Token ভুল বা মেয়াদ শেষ। আবার লগইন করুন।';
-    else if(r.status === 403) e.message = 'অনুমতি নেই বা limit শেষ। Token-এ "Contents: Read and write" permission আছে কিনা দেখুন। (' + m + ')';
-    else if(r.status === 404) e.message = 'Repository/Branch পাওয়া যায়নি, অথবা Token-এর এই repo-তে access নেই।';
+    if(r.status === 401) e.message = 'Token is invalid or expired. Please log in again.';
+    else if(r.status === 403) e.message = 'Permission denied or rate limit reached. Make sure the token has "Contents: Read and write" permission. (' + m + ')';
+    else if(r.status === 404) e.message = 'Repository or branch not found, or the token has no access to this repo.';
     return e;
   }
   async function getFile(path){
@@ -271,7 +285,7 @@
   const fileToB64 = file => new Promise((res, rej) => {
     const r = new FileReader();
     r.onload = () => res(String(r.result).split(',')[1]);
-    r.onerror = () => rej(new Error('ফাইল পড়া যায়নি'));
+    r.onerror = () => rej(new Error('Could not read the file'));
     r.readAsDataURL(file);
   });
 
@@ -348,38 +362,38 @@
   /* ---------- section config ---------- */
   const TYPES = {
     news:{
-      label:'নিউজ', single:'নিউজ', fileKey:'img',
-      note:'ছবি ও লেখা সহ নিউজ পোস্ট। সাইটে সবার উপরের সেকশনে দেখায়।',
+      label:'News', single:'news post', fileKey:'img',
+      note:'A post with an image and text. Shows in the top section of the site.',
       fields:[
-        { k:'title', l:'শিরোনাম', t:'text', req:true },
-        { k:'text',  l:'লেখা', t:'textarea' },
-        { k:'img',   l:'ছবি', t:'image' }
+        { k:'title', l:'Title', t:'text', req:true },
+        { k:'text',  l:'Text', t:'textarea' },
+        { k:'img',   l:'Image', t:'image' }
       ]
     },
     gallery:{
-      label:'গ্যালারি', single:'গ্যালারি ছবি', fileKey:'img',
-      note:'ক্যারেক্টারের ছবি ও নাম।',
+      label:'Gallery', single:'gallery image', fileKey:'img',
+      note:'Character image and name.',
       fields:[
-        { k:'title', l:'নাম', t:'text', req:true },
-        { k:'img',   l:'ছবি', t:'image', req:true }
+        { k:'title', l:'Name', t:'text', req:true },
+        { k:'img',   l:'Image', t:'image', req:true }
       ]
     },
     series:{
-      label:'সিরিজ', single:'এপিসোড',
-      note:'Watch Series-এর এপিসোড ও YouTube লিংক।',
+      label:'Series', single:'episode',
+      note:'Episode and its YouTube link, shown in Watch Series.',
       fields:[
-        { k:'title', l:'এপিসোডের নাম', t:'text', req:true },
-        { k:'genre', l:'লেবেল (যেমন: Episode 6)', t:'text' },
-        { k:'link',  l:'YouTube / ভিডিও লিংক', t:'url', req:true }
+        { k:'title', l:'Episode title', t:'text', req:true },
+        { k:'genre', l:'Label (e.g. Episode 6)', t:'text' },
+        { k:'link',  l:'YouTube / video link', t:'url', req:true }
       ]
     },
     songs:{
-      label:'গান', single:'গান', fileKey:'file',
-      note:'MP3 ফাইল আপলোড করুন। সাইটে Play ও Download দুটোই থাকে।',
+      label:'Songs', single:'song', fileKey:'file',
+      note:'Upload an MP3 file. The site shows both Play and Download for it.',
       fields:[
-        { k:'title', l:'গানের নাম', t:'text', req:true },
-        { k:'genre', l:'ধরন (যেমন: Theme Song)', t:'text' },
-        { k:'file',  l:'MP3 ফাইল', t:'audio', req:true }
+        { k:'title', l:'Song title', t:'text', req:true },
+        { k:'genre', l:'Genre (e.g. Theme Song)', t:'text' },
+        { k:'file',  l:'MP3 file', t:'audio', req:true }
       ]
     }
   };
@@ -395,12 +409,12 @@
     let html = `
       <div class="section-head">
         <h2>${T.label}</h2>
-        <button class="btn primary" data-act="add">+ নতুন ${T.single}</button>
+        <button class="btn primary" data-act="add">+ New ${T.single}</button>
       </div>
       <p class="section-note">${T.note}</p>`;
 
     if(!items.length){
-      html += `<div class="empty">এখনো কিছু নেই। উপরের বাটনে চাপ দিয়ে যোগ করুন।</div>`;
+      html += `<div class="empty">Nothing here yet. Tap the button above to add one.</div>`;
     }
     items.forEach((it, i) => {
       let lead, title = esc(it.title), sub = '';
@@ -419,11 +433,11 @@
           ${lead}
           <div class="info"><div class="t">${title}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>
           <div class="acts">
-            <button class="btn" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="উপরে">↑</button>
-            <button class="btn" data-act="down" ${i === items.length - 1 ? 'disabled' : ''} aria-label="নিচে">↓</button>
+            <button class="btn" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
+            <button class="btn" data-act="down" ${i === items.length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
             <span class="spacer"></span>
-            <button class="btn" data-act="edit">এডিট</button>
-            <button class="btn danger" data-act="del">ডিলিট</button>
+            <button class="btn" data-act="edit">Edit</button>
+            <button class="btn danger" data-act="del">Delete</button>
           </div>
         </div>`;
     });
@@ -441,8 +455,8 @@
       if(f.t === 'image' || f.t === 'audio'){
         const cur = item && val
           ? (f.t === 'image'
-              ? `<div class="preview"><img src="${esc(fileUrl(val))}" alt=""><span>বর্তমান ছবি — নতুন ছবি বেছে নিলে বদলে যাবে</span></div>`
-              : `<div class="preview"><span>বর্তমান ফাইল: ${esc(val.split('/').pop())} — নতুন ফাইল বেছে নিলে বদলে যাবে</span></div>`)
+              ? `<div class="preview"><img src="${esc(fileUrl(val))}" alt=""><span>Current image — pick a new one to replace it</span></div>`
+              : `<div class="preview"><span>Current file: ${esc(val.split('/').pop())} — pick a new one to replace it</span></div>`)
           : '';
         const accept = f.t === 'image' ? 'image/*' : 'audio/mpeg,audio/*,.mp3';
         return `<label for="f_${f.k}">${f.l}${star}</label>${cur}<input type="file" id="f_${f.k}" name="${f.k}" accept="${accept}">`;
@@ -453,12 +467,12 @@
     $('#modalRoot').innerHTML = `
       <div class="overlay" id="overlay">
         <form class="modal" id="itemForm" novalidate>
-          <h3>${item ? 'এডিট' : 'নতুন'}: ${T.single}</h3>
+          <h3>${item ? 'Edit' : 'New'}: ${T.single}</h3>
           ${fieldsHtml}
           <p class="err" id="formErr"></p>
           <div class="actions">
-            <button type="button" class="btn" id="cancelForm">বাতিল</button>
-            <button type="submit" class="btn primary">সেভ করুন</button>
+            <button type="button" class="btn" id="cancelForm">Cancel</button>
+            <button type="submit" class="btn primary">Save</button>
           </div>
         </form>
       </div>`;
@@ -478,63 +492,64 @@
       if(f.t === 'image' || f.t === 'audio'){
         const file = el.files[0];
         if(file){
-          if(f.t === 'image' && !file.type.startsWith('image/')){ err.textContent = 'শুধু ছবির ফাইল দিন।'; return; }
-          if(f.t === 'audio' && !(file.type.startsWith('audio/') || /\.mp3$/i.test(file.name))){ err.textContent = 'শুধু গানের (MP3) ফাইল দিন।'; return; }
-          if(file.size > 95 * 1024 * 1024){ err.textContent = 'ফাইল খুব বড় (৯৫ MB এর কম হতে হবে)।'; return; }
+          if(f.t === 'image' && !file.type.startsWith('image/')){ err.textContent = 'Please choose an image file.'; return; }
+          if(f.t === 'audio' && !(file.type.startsWith('audio/') || /\.mp3$/i.test(file.name))){ err.textContent = 'Please choose an MP3 audio file.'; return; }
+          if(file.size > 95 * 1024 * 1024){ err.textContent = 'File is too large (must be under 95 MB).'; return; }
           files[f.k] = file;
-        }else if(f.req && !item){ err.textContent = `"${f.l}" বেছে নিন।`; return; }
+        }else if(f.req && !item){ err.textContent = `Please choose "${f.l}".`; return; }
       }else{
         vals[f.k] = el.value.trim();
-        if(f.req && !vals[f.k]){ err.textContent = `"${f.l}" লিখুন।`; return; }
-        if(f.t === 'url' && !/^https?:\/\//i.test(vals[f.k])){ err.textContent = 'লিংক http:// বা https:// দিয়ে শুরু হতে হবে।'; return; }
+        if(f.req && !vals[f.k]){ err.textContent = `Please enter "${f.l}".`; return; }
+        if(f.t === 'url' && !/^https?:\/\//i.test(vals[f.k])){ err.textContent = 'Link must start with http:// or https://'; return; }
       }
     }
     const big = Object.values(files).find(f => f.size > 25 * 1024 * 1024);
-    if(big && !confirm('ফাইলটা ২৫ MB এর বেশি, আপলোড হতে সময় লাগবে। চালিয়ে যাবেন?')) return;
+    if(big && !confirm('That file is over 25 MB, the upload may take a while. Continue?')) return;
 
     closeForm();
     const newId = uid(), oldPaths = [];
     try{
       const uploaded = {};
       for(const k of Object.keys(files)){
-        busy(`ফাইল আপলোড হচ্ছে… (${files[k].name})`);
+        busy(`Uploading file… (${files[k].name})`);
         uploaded[k] = await uploadFile(files[k], T.fields.find(f => f.k === k).t === 'image' ? 'image' : 'audio');
       }
-      busy('সেভ হচ্ছে…');
+      busy('Saving…');
       await saveData(d => {
         const list = d[type];
         if(item){
           const it = list.find(x => x.id === item.id);
-          if(!it) throw new Error('আইটেমটা আর পাওয়া যাচ্ছে না (অন্য জায়গা থেকে মুছে গেছে?)');
+          if(!it) throw new Error('This item no longer exists (deleted elsewhere?)');
           Object.assign(it, vals);
           Object.keys(uploaded).forEach(k => { oldPaths.push(it[k]); it[k] = uploaded[k]; });
         }else{
           list.push({ id:newId, ...vals, ...uploaded });
         }
       }, `Admin: ${item ? 'edit' : 'add'} ${type}`);
-      if(oldPaths.length){ busy('পুরনো ফাইল মুছছে…'); await cleanupFiles(oldPaths); }
-      toast('সেভ হয়েছে ✓');
+      if(oldPaths.length){ busy('Removing old file…'); await cleanupFiles(oldPaths); }
+      toast('Saved ✓');
     }catch(e){
-      console.error(e); toast(e.message || 'কিছু একটা সমস্যা হয়েছে', true);
+      console.error(e);
+      toast(isNetworkError(e) ? NETWORK_HELP : (e.message || 'Something went wrong'), true);
     }finally{ unbusy(); }
   }
 
   /* ---------- panel actions ---------- */
   async function move(type, id, dir){
-    busy('সেভ হচ্ছে…');
+    busy('Saving…');
     try{
       await saveData(d => {
         const l = d[type], i = l.findIndex(x => x.id === id), j = i + dir;
         if(i < 0 || j < 0 || j >= l.length) return;
         [l[i], l[j]] = [l[j], l[i]];
       }, `Admin: reorder ${type}`);
-    }catch(e){ toast(e.message, true); }
+    }catch(e){ toast(isNetworkError(e) ? NETWORK_HELP : e.message, true); }
     finally{ unbusy(); }
   }
   async function remove(type, id){
     const it = state.data[type].find(x => x.id === id); if(!it) return;
-    if(!confirm(`"${it.title}" ডিলিট করবেন? এটা আর ফেরানো যাবে না।`)) return;
-    busy('ডিলিট হচ্ছে…');
+    if(!confirm(`Delete "${it.title}"? This cannot be undone.`)) return;
+    busy('Deleting…');
     const paths = [];
     try{
       await saveData(d => {
@@ -544,8 +559,8 @@
         paths.push(gone.img, gone.file);
       }, `Admin: delete ${type}`);
       await cleanupFiles(paths);
-      toast('ডিলিট হয়েছে ✓');
-    }catch(e){ toast(e.message, true); }
+      toast('Deleted ✓');
+    }catch(e){ toast(isNetworkError(e) ? NETWORK_HELP : e.message, true); }
     finally{ unbusy(); }
   }
 
@@ -571,7 +586,7 @@
     const r = await api('');
     if(!r.ok) throw await apiErr(r);
     const info = await r.json();
-    if(info.permissions && info.permissions.push === false) throw new Error('এই Token দিয়ে repo-তে লেখার অনুমতি নেই। "Contents: Read and write" দিন।');
+    if(info.permissions && info.permissions.push === false) throw new Error('This token cannot write to the repo. Give it "Contents: Read and write" permission.');
     await loadData();
     const s = JSON.stringify(c);
     (remember ? localStorage : sessionStorage).setItem(STORE_KEY, s);
@@ -583,19 +598,38 @@
   }
   $('#loginForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const btn = $('#loginBtn'), err = $('#loginErr'); err.textContent = ''; btn.disabled = true; btn.textContent = 'যাচাই হচ্ছে…';
+    const btn = $('#loginBtn'), err = $('#loginErr'); err.textContent = ''; btn.disabled = true; btn.textContent = 'Checking…';
     try{
       await enter({
         token: $('#token').value.trim(), owner: $('#owner').value.trim(),
         repo: $('#repo').value.trim(), branch: $('#branch').value.trim() || 'main'
       }, $('#remember').checked);
-    }catch(ex){ err.textContent = ex.message || 'লগইন করা যায়নি'; }
-    finally{ btn.disabled = false; btn.textContent = 'লগইন'; }
+    }catch(ex){
+      err.textContent = isNetworkError(ex) ? NETWORK_HELP : (ex.message || 'Could not log in');
+    }
+    finally{ btn.disabled = false; btn.textContent = 'Log in'; }
   });
   $('#logout').addEventListener('click', () => {
     localStorage.removeItem(STORE_KEY); sessionStorage.removeItem(STORE_KEY);
     cfg = null; state.data = null; $('#token').value = '';
     $('#app').classList.add('hidden'); $('#login').classList.remove('hidden');
+  });
+
+  // Lets the user check, before logging in, whether the browser can reach GitHub at all
+  $('#testConn').addEventListener('click', async () => {
+    const err = $('#loginErr');
+    err.style.color = ''; err.textContent = 'Testing connection…';
+    try{
+      const r = await fetch('https://api.github.com/zen', { cache:'no-store' });
+      if(r.ok){
+        err.style.color = 'var(--ok)';
+        err.textContent = 'Connection to GitHub is working. If login still fails, double-check your token, username and repository name.';
+      }else{
+        err.textContent = 'Reached GitHub but got an unexpected response (HTTP ' + r.status + '). Try again in a moment.';
+      }
+    }catch(ex){
+      err.textContent = NETWORK_HELP;
+    }
   });
 
   // auto-login if a saved session exists
@@ -605,9 +639,9 @@
     try{
       const c = JSON.parse(saved);
       $('#owner').value = c.owner; $('#repo').value = c.repo; $('#branch').value = c.branch;
-      busy('লগইন হচ্ছে…');
+      busy('Logging in…');
       await enter(c, !!localStorage.getItem(STORE_KEY));
-    }catch(ex){ $('#loginErr').textContent = ex.message || ''; }
+    }catch(ex){ $('#loginErr').textContent = isNetworkError(ex) ? NETWORK_HELP : (ex.message || ''); }
     finally{ unbusy(); }
   })();
 })();
