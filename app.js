@@ -60,7 +60,15 @@ function normalize(d){
     ];
   }
   d.slider = Array.isArray(d.slider) ? d.slider : [];
-  d.tabs.forEach(t => { t.items = Array.isArray(t.items) ? t.items : []; if(t.home === undefined) t.home = true; });
+  d.tabs.forEach(t => {
+    t.items = Array.isArray(t.items) ? t.items : [];
+    // series tab: list of boxes (Season 1, Season 2 ...), each with its own episodes
+    if(t.type === 'series' && t.items.length && !t.items.some(g => Array.isArray(g.episodes))){
+      t.items = [{ id:'season-1', title:'Season 1', footer:t.footer || '', episodes:t.items }];
+    }
+    if(t.type === 'series') t.items.forEach(g => { if(!Array.isArray(g.episodes)) g.episodes = []; });
+  });
+  d.about = d.about || { title:'About Midnight Tales Horror', text:'', link:'', linkLabel:'Visit our YouTube channel' };
   return d;
 }
 function loadData(){
@@ -88,18 +96,19 @@ const R = {
         <div class="tag">${esc(a.title)}</div>
       </div>`).join('') + `</div>`;
   },
-  series(items, tab){
-    return `<div class="terminal">
-      <div class="terminal-bar"><span style="background:#ff5f57"></span><span style="background:#febc2e"></span><span style="background:#28c840"></span></div>
-      <ul class="series-list">` + items.map((s,i) => `
+  series(items){
+    return items.map(g => `
+    <div class="terminal series-box">
+      <div class="terminal-bar"><span style="background:#ff5f57"></span><span style="background:#febc2e"></span><span style="background:#28c840"></span><b class="bar-title">${esc(g.title)}</b></div>
+      <ul class="series-list">` + (g.episodes || []).map((s,i) => `
         <li>
           <span class="series-num">${String(i+1).padStart(2,'0')}</span>
           <span class="series-title">${esc(s.title)}</span>
           <span class="series-genre">${esc(s.genre)}</span>
           <a class="series-status" href="${esc(safeLink(s.link) || '#')}" target="_blank" rel="noopener">WATCH NOW</a>
         </li>`).join('') + `</ul>
-      ${tab.footer ? `<div class="cursor-line">${esc(tab.footer)}<span class="blink"></span></div>` : ''}
-    </div>`;
+      ${g.footer ? `<div class="cursor-line">${esc(g.footer)}<span class="blink"></span></div>` : ''}
+    </div>`).join('');
   },
   songs(items, tab){
     return `<div class="terminal">
@@ -126,10 +135,8 @@ function sectionHTML(tab, num){
   return `
   <section id="tab-${esc(tab.id)}" class="tab-section ${esc(tab.type)}">
     <div class="sec-head">
-      ${num ? `<span class="sec-num">${String(num).padStart(2,'0')}</span>` : ''}
       <h2>${esc(tab.label)}</h2>
       <div class="rule"></div>
-      ${num ? `<a class="view-all" href="${pageUrl(tab.id)}">VIEW PAGE →</a>` : ''}
     </div>
     ${tab.note ? `<p class="gallery-note">${esc(tab.note)}</p>` : ''}
     ${inner}
@@ -146,7 +153,7 @@ function renderNav(d, activeId, onHome){
   const el = $('#navLinks'); if(!el) return;
   let html = onHome ? '' : `<li><a href="./">Home</a></li>`;
   html += d.tabs.map(t => {
-    const href = onHome && t.home ? '#tab-' + t.id : pageUrl(t.id);
+    const href = pageUrl(t.id);
     return `<li><a href="${esc(href)}" class="${activeId === t.id ? 'active' : ''}">${esc(t.label)}</a></li>`;
   }).join('');
   el.innerHTML = html;
@@ -249,8 +256,16 @@ window.DP = {
       renderNav(d, '', true);
       renderTabbar(d, '');
       initSlider(d);
-      let n = 0;
-      $('#homeSections').innerHTML = d.tabs.filter(t => t.home).map(t => sectionHTML(t, ++n)).join('');
+      const ab = d.about || {};
+      const link = safeLink(ab.link);
+      $('#homeSections').innerHTML = (ab.title || ab.text) ? `
+        <section id="about" class="about">
+          <div class="sec-head"><h2>${esc(ab.title || 'About')}</h2><div class="rule"></div></div>
+          <div class="about-card">
+            ${ab.text ? `<p>${esc(ab.text)}</p>` : ''}
+            ${link ? `<a class="yt-btn" href="${esc(link)}" target="_blank" rel="noopener">▶ ${esc(ab.linkLabel || 'Visit our YouTube channel')}</a>` : ''}
+          </div>
+        </section>` : '';
     }).catch(() => { $('#homeSections').innerHTML = '<div class="empty-note">Could not load content.</div>'; });
   },
   initPage(){

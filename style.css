@@ -350,3 +350,25 @@
   .nav-links{ display:none; }
 }
 .slider a.slide{ color:var(--ink); text-decoration:none; }
+
+/* ---------- series boxes + about ---------- */
+.terminal-bar .bar-title{
+  margin-left:10px; font-family:'Chakra Petch',sans-serif; font-weight:600; font-size:0.85rem;
+  letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-dim);
+}
+.series-box{ margin-bottom:28px; }
+.series-box:last-child{ margin-bottom:0; }
+.about{ padding:0 0 100px; position:relative; z-index:2; }
+.about .sec-head{ padding-top:70px; }
+.about-card{
+  margin:0 6vw; max-width:860px; padding:28px 28px 30px; border:1px solid var(--line);
+  border-left:2px solid var(--tech-dim); border-radius:8px; background:rgba(15,10,13,0.6);
+}
+.about-card p{ color:var(--ink-dim); font-size:1.08rem; line-height:1.75; white-space:pre-line; }
+.yt-btn{
+  display:inline-block; margin-top:24px; text-decoration:none; font-family:'Chakra Petch',sans-serif; font-weight:600;
+  font-size:0.9rem; letter-spacing:0.08em; color:#1a0603; background:var(--ember-1); padding:11px 22px; border-radius:26px;
+  transition:background .25s, box-shadow .25s, transform .25s;
+}
+.yt-btn:hover{ background:var(--ember-2); box-shadow:0 0 18px rgba(255,90,31,0.55); transform:translateY(-2px); }
+.slider .slide .cap .go{ white-space:nowrap; flex:0 0 auto; }

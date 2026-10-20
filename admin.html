@@ -246,22 +246,36 @@
       delete d.news; delete d.gallery; delete d.series; delete d.songs;
     }
     if(!Array.isArray(d.slider)) d.slider = [];
+    if(!d.about) d.about = { title:'About Midnight Tales Horror', text:'', link:'', linkLabel:'Visit our YouTube channel' };
     d.slider.forEach(it => { if(!it.id) it.id = uid(); });
     d.tabs.forEach(t => {
       if(!t.id) t.id = uid();
       if(!Array.isArray(t.items)) t.items = [];
-      if(t.home === undefined) t.home = true;
       t.items.forEach(it => { if(!it.id) it.id = uid(); });
+      if(t.type === 'series'){   // series tab = list of boxes, each with episodes
+        if(t.items.length && !t.items.some(g => Array.isArray(g.episodes)))
+          t.items = [{ id:uid(), title:'Season 1', footer:t.footer || '', episodes:t.items }];
+        t.items.forEach(g => { if(!Array.isArray(g.episodes)) g.episodes = []; g.episodes.forEach(e => { if(!e.id) e.id = uid(); }); });
+      }
     });
     return d;
   }
   const getTab  = (d, id) => d.tabs.find(t => t.id === id);
-  const listOf  = (d, key) => key === 'slider' ? d.slider : (getTab(d, key) || { items:[] }).items;
-  const typeOf  = (d, key) => key === 'slider' ? 'slider' : (getTab(d, key) || {}).type;
+  function listOf(d, key){
+    if(key === 'slider') return d.slider;
+    const t = getTab(d, key); if(!t) return [];
+    if(t.type === 'series' && state.group){ const g = t.items.find(x => x.id === state.group); return g ? g.episodes : []; }
+    return t.items;
+  }
+  function typeOf(d, key){
+    if(key === 'slider') return 'slider';
+    const t = getTab(d, key); if(!t) return undefined;
+    return t.type === 'series' ? (state.group ? 'episode' : 'seriesbox') : t.type;
+  }
 
   /* ---------- GitHub API ---------- */
   let cfg = null;               // {token, owner, repo, branch}
-  const state = { data:null, tab:'slider' };
+  const state = { data:null, tab:'slider', group:null };
 
   function api(path, opts = {}){
     const base = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}`;
@@ -414,8 +428,15 @@
         { k:'img',   l:'Image', t:'image', req:true }
       ]
     },
-    series:{
-      label:'Series', single:'episode',
+    seriesbox:{
+      label:'Series', single:'series box',
+      fields:[
+        { k:'title', l:'Box name (e.g. Season 2)', t:'text', req:true },
+        { k:'footer', l:'Last line (optional, e.g. Season 3 Coming Soon...)', t:'text' }
+      ]
+    },
+    episode:{
+      label:'Episodes', single:'episode',
       fields:[
         { k:'title', l:'Episode title', t:'text', req:true },
         { k:'genre', l:'Label (e.g. Episode 6)', t:'text' },
@@ -434,7 +455,7 @@
   const TAB_TYPES = [
     ['news',    'News — image + text posts'],
     ['gallery', 'Gallery — image grid with names'],
-    ['series',  'Series — list with video links'],
+    ['series',  'Series — boxes (Season 1, Season 2…) with episodes'],
     ['songs',   'Songs — MP3 play / download']
   ];
   const TYPE_NAME = { news:'News', gallery:'Gallery', series:'Series', songs:'Songs' };
@@ -442,14 +463,16 @@
   /* ---------- render ---------- */
   function render(){
     const d = state.data; if(!d) return;
-    if(state.tab !== 'slider' && state.tab !== '__tabs' && !getTab(d, state.tab)) state.tab = 'slider';
+    if(!['slider','__tabs','__about'].includes(state.tab) && !getTab(d, state.tab)) state.tab = 'slider';
+    if(state.group && !(getTab(d, state.tab) && getTab(d, state.tab).items.some(g => g.id === state.group))) state.group = null;
 
     $('#tabs').innerHTML =
       `<button class="tab ${state.tab === 'slider' ? 'active' : ''}" role="tab" data-tab="slider">Slider<span class="count">${d.slider.length}</span></button>` +
+      `<button class="tab ${state.tab === '__about' ? 'active' : ''}" role="tab" data-tab="__about">Home text</button>` +
       d.tabs.map(t => `<button class="tab ${state.tab === t.id ? 'active' : ''}" role="tab" data-tab="${esc(t.id)}">${esc(t.label)}<span class="count">${t.items.length}</span></button>`).join('') +
       `<button class="tab ${state.tab === '__tabs' ? 'active' : ''}" role="tab" data-tab="__tabs">⚙ Tabs</button>`;
 
-    $('#panel').innerHTML = state.tab === '__tabs' ? renderTabsManager(d) : renderItems(d, state.tab);
+    $('#panel').innerHTML = state.tab === '__tabs' ? renderTabsManager(d) : state.tab === '__about' ? renderAbout(d) : renderItems(d, state.tab);
   }
 
   function renderTabsManager(d){
@@ -465,7 +488,7 @@
         <div class="item" data-id="${esc(t.id)}">
           <div class="badge">${String(i + 1).padStart(2, '0')}</div>
           <div class="info"><div class="t">${esc(t.label)}</div>
-            <div class="s">${TYPE_NAME[t.type] || t.type} • ${t.items.length} item(s) • ${t.home ? 'shown on main page too' : 'own page only'}</div></div>
+            <div class="s">${TYPE_NAME[t.type] || t.type} • ${t.items.length} ${t.type === 'series' ? 'box(es)' : 'item(s)'}</div></div>
           <div class="acts">
             <button class="btn" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
             <button class="btn" data-act="down" ${i === d.tabs.length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
@@ -482,10 +505,13 @@
   function renderItems(d, key){
     const type = typeOf(d, key), T = TYPES[type], items = listOf(d, key);
     const tab = key === 'slider' ? null : getTab(d, key);
-    const title = tab ? tab.label : T.label;
+    const grp = tab && tab.type === 'series' && state.group ? tab.items.find(g => g.id === state.group) : null;
+    const title = grp ? `${tab.label} › ${grp.title}` : tab ? tab.label : T.label;
     const note = key === 'slider' ? T.note
+      : type === 'seriesbox' ? 'Each box is one block on the Watch Series page (e.g. Season 1, Season 2). Create a box, then open it to add its episodes.'
+      : type === 'episode' ? `Episodes inside the “${esc(grp.title)}” box.`
       : `Content of the “${esc(tab.label)}” page (${TYPE_NAME[tab.type]}).`;
-    let html = `
+    let html = (grp ? `<p><button class="link-btn" data-act="back">← Back to all boxes</button></p>` : '') + `
       <div class="section-head">
         <h2>${esc(title)}</h2>
         <button class="btn primary" data-act="add">+ New ${T.single}</button>
@@ -498,7 +524,10 @@
         lead = it.img ? `<img class="thumb" loading="lazy" src="${esc(fileUrl(it.img))}" alt="">` : `<div class="badge">—</div>`;
         sub = type === 'news' ? esc((it.text || '').replace(/\s+/g, ' ').slice(0, 80))
             : type === 'slider' ? esc(it.link || 'No link') : '';
-      }else if(type === 'series'){
+      }else if(type === 'seriesbox'){
+        lead = `<div class="badge">${String(i + 1).padStart(2, '0')}</div>`;
+        sub = `${(it.episodes || []).length} episode(s)`;
+      }else if(type === 'episode'){
         lead = `<div class="badge">${String(i + 1).padStart(2, '0')}</div>`;
         sub = esc([it.genre, it.link].filter(Boolean).join(' • '));
       }else{
@@ -514,12 +543,55 @@
             <button class="btn" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
             <button class="btn" data-act="down" ${i === items.length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
             <span class="spacer"></span>
+            ${type === 'seriesbox' ? '<button class="btn primary" data-act="opengroup">Open episodes</button>' : ''}
             <button class="btn" data-act="edit">Edit</button>
             <button class="btn danger" data-act="del">Delete</button>
           </div>
         </div>`;
     });
     return html;
+  }
+
+  /* ---------- Home page text (About) ---------- */
+  function renderAbout(d){
+    const a = d.about;
+    return `
+      <div class="section-head"><h2>Home page text</h2><button class="btn primary" data-act="editabout">Edit</button></div>
+      <p class="section-note">The short text about your YouTube channel shown at the bottom of the main page, under the slider.</p>
+      <div class="item" style="grid-template-columns:1fr">
+        <div class="info"><div class="t">${esc(a.title || '—')}</div>
+          <div class="s" style="white-space:pre-line">${esc(a.text || 'No text yet.')}</div>
+          <div class="s" style="margin-top:8px">${esc(a.link ? a.linkLabel + ' → ' + a.link : 'No channel link')}</div></div>
+      </div>`;
+  }
+  function openAboutForm(){
+    const a = state.data.about;
+    $('#modalRoot').innerHTML = `
+      <div class="overlay" id="overlay">
+        <form class="modal" id="aboutForm" novalidate>
+          <h3>Edit home page text</h3>
+          <label for="a_title">Heading</label><input type="text" id="a_title" value="${esc(a.title)}">
+          <label for="a_text">Text (a few lines about the channel)</label><textarea id="a_text">${esc(a.text)}</textarea>
+          <label for="a_link">YouTube channel link</label><input type="url" id="a_link" value="${esc(a.link)}" placeholder="https://">
+          <label for="a_label">Button text</label><input type="text" id="a_label" value="${esc(a.linkLabel)}">
+          <p class="err" id="formErr"></p>
+          <div class="actions">
+            <button type="button" class="btn" id="cancelForm">Cancel</button>
+            <button type="submit" class="btn primary">Save</button>
+          </div>
+        </form>
+      </div>`;
+    $('#cancelForm').onclick = closeForm;
+    $('#overlay').addEventListener('mousedown', e => { if(e.target.id === 'overlay') closeForm(); });
+    $('#aboutForm').onsubmit = async e => {
+      e.preventDefault();
+      const v = { title:$('#a_title').value.trim(), text:$('#a_text').value.trim(), link:$('#a_link').value.trim(), linkLabel:$('#a_label').value.trim() || 'Visit our YouTube channel' };
+      if(v.link && !/^https?:\/\//i.test(v.link)){ $('#formErr').textContent = 'Link must start with http:// or https://'; return; }
+      closeForm(); busy('Saving…');
+      try{ await saveData(d => { d.about = v; }, 'Admin: edit home text'); toast('Saved ✓'); }
+      catch(ex){ toast(isNetworkError(ex) ? networkHelpWith(ex) : (ex.message || 'Something went wrong'), true); }
+      finally{ unbusy(); }
+    };
   }
 
   /* ---------- modal: add / edit an item ---------- */
@@ -601,7 +673,7 @@
           Object.assign(it, vals);
           Object.keys(uploaded).forEach(k => { oldPaths.push(it[k]); it[k] = uploaded[k]; });
         }else{
-          list.push({ id:newId, ...vals, ...uploaded });
+          list.push({ id:newId, ...vals, ...uploaded, ...(type === 'seriesbox' ? { episodes:[] } : {}) });
         }
       }, `Admin: ${item ? 'edit' : 'add'} ${key}`);
       if(oldPaths.length){ busy('Removing old file…'); await cleanupFiles(oldPaths); }
@@ -628,9 +700,8 @@
           ${tab ? '<p class="hint">The type is fixed after the tab is created.</p>' : ''}
           <label for="t_note">Short text under the heading (optional)</label>
           <input type="text" id="t_note" value="${esc(tab ? tab.note || '' : '')}">
-          <label for="t_footer">Last line (optional — shown at the bottom of Series / Songs lists)</label>
+          <label for="t_footer">Last line (optional — shown at the bottom of a Songs list)</label>
           <input type="text" id="t_footer" value="${esc(tab ? tab.footer || '' : '')}" placeholder="e.g. Season 2 Coming Soon...">
-          <label class="check"><input type="checkbox" id="t_home" ${!tab || tab.home ? 'checked' : ''}> Also show this section on the main page</label>
           <p class="err" id="formErr"></p>
           <div class="actions">
             <button type="button" class="btn" id="cancelForm">Cancel</button>
@@ -646,7 +717,7 @@
   async function submitTabForm(tab){
     const label = $('#t_label').value.trim();
     if(!label){ $('#formErr').textContent = 'Please enter a tab name.'; return; }
-    const vals = { label, note:$('#t_note').value.trim(), footer:$('#t_footer').value.trim(), home:$('#t_home').checked };
+    const vals = { label, note:$('#t_note').value.trim(), footer:$('#t_footer').value.trim() };
     const type = $('#t_type').value;
     const base = slug(label); const newId = (base === 'file' ? 'tab' : base) + '-' + uid().slice(-4);
     closeForm(); busy('Saving…');
@@ -713,7 +784,7 @@
 
   $('#tabs').addEventListener('click', e => {
     const b = e.target.closest('[data-tab]'); if(!b) return;
-    state.tab = b.dataset.tab; render();
+    state.tab = b.dataset.tab; state.group = null; render();
   });
   $('#panel').addEventListener('click', e => {
     const b = e.target.closest('[data-act]'); if(!b) return;
@@ -726,7 +797,10 @@
     else if(act === 'addtab') openTabForm();
     else if(act === 'edittab') openTabForm(id);
     else if(act === 'deltab') removeTab(id);
-    else if(act === 'open'){ state.tab = id; render(); }
+    else if(act === 'open'){ state.tab = id; state.group = null; render(); }
+    else if(act === 'opengroup'){ state.group = id; render(); }
+    else if(act === 'back'){ state.group = null; render(); }
+    else if(act === 'editabout') openAboutForm();
   });
   document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('#modalRoot').innerHTML) closeForm(); });
 

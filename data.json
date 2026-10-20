@@ -2,15 +2,27 @@
   "slider": [
     {
       "id": "sl1",
-      "title": "Dark Phoenix: Godfall Season 2 — Official Trailer",
-      "img": "uploads/1792521053765-1000502244.jpg",
-      "link": "https://youtu.be/Jd4Aujs68vo"
+      "title": "Dark Phoenix: Godfall — 25 December",
+      "img": "uploads/1791255393928-1000488642.png",
+      "link": "https://youtube.com/@midnighttaleshorror?si=seiQ2TWGdXwef4VZ"
     },
     {
       "id": "sl2",
-      "title": "Dark Phoenix: The Ai Butcher Full Movie",
-      "img": "uploads/1792521110480-1000502260.jpg",
-      "link": "https://youtu.be/auH8lgaDH9s"
+      "title": "Dark Phoenix: Godfall Teaser",
+      "img": "uploads/1790618439400-1000481436.png",
+      "link": "https://youtube.com/@midnighttaleshorror?si=seiQ2TWGdXwef4VZ"
+    },
+    {
+      "id": "sl3",
+      "title": "Season 2 — Coming Soon",
+      "img": "s2.png",
+      "link": "https://youtube.com/@midnighttaleshorror?si=seiQ2TWGdXwef4VZ"
+    },
+    {
+      "id": "sl4",
+      "title": "Watch Episode 1",
+      "img": "1.png",
+      "link": "https://youtu.be/z_8upLnRWps"
     }
   ],
   "tabs": [
@@ -18,7 +30,6 @@
       "id": "news",
       "label": "News",
       "type": "news",
-      "home": true,
       "note": "",
       "footer": "",
       "items": [
@@ -46,7 +57,6 @@
       "id": "gallery",
       "label": "Gallery",
       "type": "gallery",
-      "home": true,
       "note": "Project Phoenix Team Member:",
       "footer": "",
       "items": [
@@ -91,39 +101,45 @@
       "id": "series",
       "label": "Watch Series",
       "type": "series",
-      "home": true,
       "note": "",
-      "footer": "Season 2 Coming Soon...",
+      "footer": "",
       "items": [
         {
-          "id": "e1",
-          "title": "Dark Phoenix Ka Punar Janam",
-          "genre": "Episode 1",
-          "link": "https://youtu.be/z_8upLnRWps"
-        },
-        {
-          "id": "e2",
-          "title": "Pach Core Ka Rahasya",
-          "genre": "Episode 2",
-          "link": "https://youtu.be/EMSTWeN7AVE"
-        },
-        {
-          "id": "e3",
-          "title": "Hydra Ki Talaash",
-          "genre": "Episode 3",
-          "link": "https://youtu.be/gCULg_GukWc"
-        },
-        {
-          "id": "e4",
-          "title": "Thunderbird Ka Jagran",
-          "genre": "Episode 4",
-          "link": "https://youtu.be/5DUibqj-ChE"
-        },
-        {
-          "id": "e5",
-          "title": "The Core of Destruction",
-          "genre": "Episode 5",
-          "link": "https://youtu.be/tPJE9atDQdI"
+          "id": "season-1",
+          "title": "Season 1",
+          "footer": "Season 2 Coming Soon...",
+          "episodes": [
+            {
+              "id": "e1",
+              "title": "Dark Phoenix Ka Punar Janam",
+              "genre": "Episode 1",
+              "link": "https://youtu.be/z_8upLnRWps"
+            },
+            {
+              "id": "e2",
+              "title": "Pach Core Ka Rahasya",
+              "genre": "Episode 2",
+              "link": "https://youtu.be/EMSTWeN7AVE"
+            },
+            {
+              "id": "e3",
+              "title": "Hydra Ki Talaash",
+              "genre": "Episode 3",
+              "link": "https://youtu.be/gCULg_GukWc"
+            },
+            {
+              "id": "e4",
+              "title": "Thunderbird Ka Jagran",
+              "genre": "Episode 4",
+              "link": "https://youtu.be/5DUibqj-ChE"
+            },
+            {
+              "id": "e5",
+              "title": "The Core of Destruction",
+              "genre": "Episode 5",
+              "link": "https://youtu.be/tPJE9atDQdI"
+            }
+          ]
         }
       ]
     },
@@ -131,7 +147,6 @@
       "id": "songs",
       "label": "Songs",
       "type": "songs",
-      "home": true,
       "note": "",
       "footer": "Full Album Coming Soon...",
       "items": [
@@ -179,5 +194,11 @@
         }
       ]
     }
-  ]
+  ],
+  "about": {
+    "title": "About Midnight Tales Horror",
+    "text": "Midnight Tales Horror is a YouTube channel for dark, cinematic horror stories and anime-style storytelling.\n\nOur main series, Dark Phoenix: The AI Butcher, follows Shrikant, Vrinda and Arrow through a world of new powers, hidden secrets and dangerous choices. Season 2, Dark Phoenix: Godfall, streams from December 25, 2026.\n\nBesides the series, we also share original songs from the story. Subscribe to the channel and stay active so you never miss a new episode.",
+    "link": "https://youtube.com/@midnighttaleshorror?si=seiQ2TWGdXwef4VZ",
+    "linkLabel": "Visit our YouTube channel"
+  }
 }
