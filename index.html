@@ -30,288 +30,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg-0:#07070a;
-    --bg-1:#0f0a0d;
-    --ember-1:#ff5a1f;
-    --ember-2:#ffb020;
-    --ember-3:#8a0f1f;
-    --tech-1:#39f7ff;
-    --tech-dim:#1a5a5e;
-    --ink:#f2ece3;
-    --ink-dim:#9a9a9f;
-    --line: rgba(255,255,255,0.08);
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--bg-0);
-    color:var(--ink);
-    font-family:'Rajdhani', sans-serif;
-    overflow-x:hidden;
-    position:relative;
-  }
-  h1,h2,h3,.logo,.nav a,.series-num{font-family:'Chakra Petch', sans-serif;}
-
-  #ember-canvas{ position:fixed; inset:0; z-index:0; pointer-events:none; }
-  .bg-grid{
-    position:fixed; inset:0; z-index:0;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size:48px 48px;
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black 10%, transparent 75%);
-    opacity:0.5;
-  }
-  .bg-glow{
-    position:fixed; inset:0; z-index:0;
-    background:
-      radial-gradient(ellipse 60% 40% at 50% -5%, rgba(255,90,31,0.28), transparent 60%),
-      radial-gradient(ellipse 50% 30% at 85% 100%, rgba(57,247,255,0.08), transparent 60%);
-  }
-
-  nav{
-    position:fixed; top:0; left:0; right:0; z-index:20;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:22px 6vw;
-    background:linear-gradient(to bottom, rgba(7,7,10,0.9), transparent);
-    backdrop-filter:blur(2px);
-  }
-  .logo{ font-weight:700; font-size:1.05rem; letter-spacing:0.04em; color:var(--ink); }
-  .logo span{color:var(--ember-1);}
-  .nav-links{display:flex; gap:2.4rem; list-style:none;}
-  .nav-links a{
-    color:var(--ink-dim); text-decoration:none; font-size:0.95rem;
-    letter-spacing:0.03em; position:relative; transition:color .25s; font-weight:500;
-  }
-  .nav-links a::after{
-    content:''; position:absolute; left:0; bottom:-6px; height:1px; width:0;
-    background:var(--tech-1); transition:width .3s ease; box-shadow:0 0 8px var(--tech-1);
-  }
-  .nav-links a:hover{color:var(--ink);}
-  .nav-links a:hover::after{width:100%;}
-
-  section{position:relative; z-index:2;}
-
-  .hero{
-    min-height:100vh; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; text-align:center;
-    padding:120px 6vw 60px; position:relative;
-  }
-  .hero-tag{
-    color:var(--tech-1); font-size:0.85rem; letter-spacing:0.25em;
-    margin-bottom:28px; font-weight:500; opacity:0.85;
-    border:1px solid var(--tech-dim); padding:6px 16px; border-radius:2px;
-  }
-  .logo-mark{
-    width:min(150px, 34vw); margin-bottom:18px; display:block;
-    animation:logoFloat 4.5s ease-in-out infinite, logoGlow 3.2s ease-in-out infinite;
-  }
-  @keyframes logoFloat{
-    0%,100%{ transform:translateY(0) rotate(0deg); }
-    50%{ transform:translateY(-12px) rotate(-1deg); }
-  }
-  @keyframes logoGlow{
-    0%,100%{ filter:drop-shadow(0 0 12px rgba(200,40,40,0.35)) drop-shadow(0 0 2px rgba(255,255,255,0.15)); }
-    50%{ filter:drop-shadow(0 0 30px rgba(200,40,40,0.7)) drop-shadow(0 0 6px rgba(255,255,255,0.3)); }
-  }
-  .phoenix-wrap{ width:min(360px, 60vw); margin-bottom:8px; filter:drop-shadow(0 0 40px rgba(255,90,31,0.45)); }
-  .hero h1{
-    font-size:clamp(2.8rem, 8vw, 6.2rem);
-    font-weight:700; letter-spacing:0.02em; line-height:0.95;
-    background:linear-gradient(180deg, #fff 10%, var(--ember-2) 55%, var(--ember-1) 100%);
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    position:relative;
-  }
-  .hero h1 .glitch-layer{
-    position:absolute; inset:0; color:var(--tech-1); opacity:0;
-    -webkit-background-clip:initial; background:none;
-    animation:glitchFlicker 6s steps(1) infinite;
-  }
-  @keyframes glitchFlicker{
-    0%,93%,100%{opacity:0; transform:translate(0,0);}
-    94%{opacity:0.55; transform:translate(-3px,1px);}
-    95%{opacity:0.35; transform:translate(3px,-1px);}
-    96%{opacity:0;}
-  }
-  .hero p.sub{ margin-top:20px; color:var(--ink-dim); font-size:1.15rem; letter-spacing:0.08em; font-weight:500; }
-  .hero p.sub b{color:var(--ember-1); font-weight:600;}
-  .scroll-cue{
-    position:absolute; bottom:36px; left:50%; transform:translateX(-50%);
-    width:1px; height:52px; background:linear-gradient(var(--tech-1), transparent); opacity:0.6;
-  }
-  .scroll-cue::after{
-    content:''; position:absolute; top:0; left:-2px; width:5px; height:5px;
-    background:var(--tech-1); border-radius:50%; box-shadow:0 0 8px var(--tech-1);
-    animation:cueMove 2.2s ease-in-out infinite;
-  }
-  @keyframes cueMove{ 0%{top:0; opacity:1;} 90%{opacity:0;} 100%{top:52px; opacity:0;} }
-
-  .sec-head{ display:flex; align-items:baseline; gap:18px; margin:0 6vw 40px; padding-top:100px; }
-  .sec-num{ color:var(--ember-1); font-size:0.95rem; font-weight:600; letter-spacing:0.1em;}
-  .sec-head h2{ font-size:clamp(1.8rem,3.5vw,2.6rem); font-weight:600; }
-  .sec-head .rule{ flex:1; height:1px; background:var(--line); }
-
-  .news{ padding-bottom:100px; }
-  .gallery{ padding-bottom:100px; }
-  .gallery-note{
-    margin:0 6vw 32px; color:var(--ink-dim); font-size:0.95rem; max-width:640px;
-    line-height:1.6; border-left:2px solid var(--tech-dim); padding-left:16px;
-  }
-  .gallery-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:22px; padding:0 6vw; }
-  .art-card{
-    position:relative; aspect-ratio:3/4; border-radius:6px; overflow:hidden;
-    border:1px solid var(--line); background:var(--bg-1); cursor:default;
-  }
-  .art-card svg{ width:100%; height:100%; display:block; transition:filter .35s ease; }
-  .art-card img{
-    width:100%; height:100%; object-fit:cover; display:block;
-    background:linear-gradient(135deg, #1a0e12, #0a0a0f);
-    transition:filter .35s ease, transform .5s ease;
-  }
-  .art-card:hover img{ filter:brightness(1.12) saturate(1.15); transform:scale(1.04); }
-  .art-card .tag{
-    position:absolute; left:0; right:0; bottom:0; padding:14px 16px 12px;
-    background:linear-gradient(to top, rgba(5,5,7,0.95), transparent);
-    font-weight:600; font-size:1rem; letter-spacing:0.02em;
-    transform:translateY(4px); opacity:0.85; transition:transform .35s ease, opacity .35s ease;
-  }
-  .art-card::before{
-    content:''; position:absolute; inset:0; z-index:1;
-    box-shadow:inset 0 0 0 1px transparent; transition:box-shadow .35s ease;
-  }
-  .art-card:hover::before{ box-shadow:inset 0 0 0 1px var(--ember-1); }
-  .art-card:hover .tag{ transform:translateY(0); opacity:1; }
-  .art-card:hover svg{ filter:brightness(1.12) saturate(1.15); }
-
-  /* ---------- series / songs list (shared terminal style) ---------- */
-  .series{ padding-bottom:60px; }
-  .songs{ padding-bottom:110px; }
-
-  .terminal{
-    margin:0 6vw; border:1px solid var(--line); border-radius:8px;
-    background:rgba(15,10,13,0.6); overflow:hidden;
-  }
-  .terminal-bar{
-    display:flex; align-items:center; gap:8px; padding:12px 16px;
-    border-bottom:1px solid var(--line); background:rgba(255,255,255,0.02);
-  }
-  .terminal-bar span{ width:10px; height:10px; border-radius:50%; background:#3a3a40; }
-  .series-list{ list-style:none; }
-  .series-list li{
-    display:grid; grid-template-columns:64px 1fr 140px 90px;
-    align-items:center; padding:18px 22px; gap:12px;
-    border-bottom:1px solid var(--line); transition:background .25s ease;
-  }
-  .series-list li:last-child{ border-bottom:none; }
-  .series-list li:hover{ background:rgba(255,90,31,0.06); }
-  .series-num{ color:var(--tech-1); font-size:0.9rem; opacity:0.75; }
-  .series-title{ font-size:1.15rem; font-weight:600; letter-spacing:0.01em; }
-  .series-genre{ color:var(--ink-dim); font-size:0.88rem; letter-spacing:0.03em; }
-  .series-status{
-    justify-self:end; font-size:0.78rem; letter-spacing:0.08em; font-weight:600;
-    padding:6px 14px; border-radius:20px; border:1px solid var(--tech-dim); color:var(--tech-1);
-    text-decoration:none; white-space:nowrap; transition:background .25s ease, color .25s ease, box-shadow .25s ease;
-  }
-  .series-status:hover{ background:var(--tech-1); color:#04181a; box-shadow:0 0 14px rgba(57,247,255,0.5); }
-
-  /* songs section reuses .series-list but with an ember accent instead of cyan */
-  .songs-list li{ grid-template-columns:56px 1fr 110px 100px 110px; }
-  .songs-list li:hover{ background:rgba(57,247,255,0.06); }
-  .song-status{
-    justify-self:end; font-size:0.78rem; letter-spacing:0.08em; font-weight:600;
-    padding:6px 14px; border-radius:20px; border:1px solid var(--ember-3); color:var(--ember-1);
-    text-decoration:none; white-space:nowrap; transition:background .25s ease, color .25s ease, box-shadow .25s ease;
-  }
-  .song-status:hover{ background:var(--ember-1); color:#1a0603; box-shadow:0 0 14px rgba(255,90,31,0.5); }
-  .song-status.playing{ background:var(--ember-1); color:#1a0603; box-shadow:0 0 14px rgba(255,90,31,0.6); }
-  .song-download{
-    justify-self:end; font-size:0.78rem; letter-spacing:0.08em; font-weight:600;
-    padding:6px 14px; border-radius:20px; border:1px solid var(--tech-dim); color:var(--tech-1);
-    text-decoration:none; white-space:nowrap; transition:background .25s ease, color .25s ease, box-shadow .25s ease;
-    display:flex; align-items:center; gap:6px;
-  }
-  .song-download svg{ width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .song-download:hover{ background:var(--tech-1); color:#04181a; box-shadow:0 0 14px rgba(57,247,255,0.5); }
-
-  .cursor-line{ padding:16px 22px; color:var(--ink-dim); font-family:'Chakra Petch',sans-serif; font-size:0.9rem;}
-  .cursor-line .blink{ display:inline-block; width:8px; height:16px; background:var(--tech-1); margin-left:6px; vertical-align:middle; animation:blink 1s steps(1) infinite;}
-  @keyframes blink{ 50%{opacity:0;} }
-
-  footer{
-    text-align:center; padding:50px 6vw 40px; color:var(--ink-dim);
-    font-size:0.85rem; border-top:1px solid var(--line); position:relative; z-index:2; letter-spacing:0.05em;
-  }
-  footer b{ color:var(--ember-1); }
-  .social-row{
-    display:flex; justify-content:center; gap:18px; margin-bottom:22px;
-  }
-  .social-row a{
-    display:flex; align-items:center; justify-content:center;
-    width:38px; height:38px; border-radius:50%;
-    border:1px solid var(--line); color:var(--ink-dim);
-    transition:color .25s ease, border-color .25s ease, box-shadow .25s ease, transform .25s ease;
-  }
-  .social-row a svg{ width:17px; height:17px; fill:currentColor; }
-  .social-row a:hover{
-    color:var(--ink); border-color:var(--ember-1);
-    box-shadow:0 0 14px rgba(255,90,31,0.45); transform:translateY(-3px);
-  }
-
-  @media (max-width:640px){
-    .series-list li{ grid-template-columns:36px 1fr; row-gap:6px; }
-    .songs-list li{ grid-template-columns:36px 1fr; }
-    .series-genre, .series-status, .song-status, .song-download{ grid-column:2/3; justify-self:start; }
-    .nav-links{ display:none; }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
-  }
-
-
-  /* ---------- news items (dynamic from data.json) ---------- */
-  .news-list{ display:flex; flex-direction:column; gap:28px; padding:0 6vw; }
-  .news-item{ display:grid; grid-template-columns:minmax(200px,300px) 1fr; gap:26px; align-items:start; }
-  .news-item .art-card{ width:100%; }
-  .news-item.no-img{ grid-template-columns:1fr; }
-  .news-body h3{ font-size:1.5rem; font-weight:600; margin-bottom:12px; }
-  .news-body p{ color:var(--ink-dim); font-size:1.02rem; line-height:1.7; white-space:pre-line; border-left:2px solid var(--tech-dim); padding-left:16px; max-width:680px; }
-  @media (max-width:640px){ .news-item{ grid-template-columns:1fr; } }
-
-  /* ---------- intro / welcome screen ---------- */
-  #intro-screen{
-    position:fixed; inset:0; z-index:100; background:var(--bg-0);
-    display:flex; align-items:center; justify-content:center; flex-direction:column;
-    transition:opacity 1s ease, visibility 1s ease; cursor:pointer;
-  }
-  #intro-screen.hide{ opacity:0; visibility:hidden; pointer-events:none; }
-  #intro-screen .intro-glow{
-    position:absolute; inset:0;
-    background:radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255,90,31,0.35), transparent 70%);
-    animation:introPulse 2.4s ease-in-out infinite;
-  }
-  @keyframes introPulse{ 0%,100%{opacity:0.5;} 50%{opacity:1;} }
-  #intro-screen h2{
-    font-family:'Chakra Petch',sans-serif; font-weight:700;
-    font-size:clamp(0.95rem,3.6vw,2rem); letter-spacing:0.08em;
-    color:var(--ink); position:relative; z-index:1; text-align:center;
-    text-shadow:0 0 24px rgba(255,90,31,0.6);
-    white-space:nowrap; padding:0 4vw;
-  }
-  #intro-screen h2 span{
-    display:inline-block; opacity:0; transform:translateY(12px);
-    animation:letterIn 0.5s ease forwards;
-  }
-  @keyframes letterIn{ to{ opacity:1; transform:translateY(0);} }
-  #intro-screen .intro-hint{
-    margin-top:26px; color:var(--ink-dim); font-size:0.78rem;
-    letter-spacing:0.22em; opacity:0; position:relative; z-index:1;
-    animation:hintFade 1s ease forwards; animation-delay:2s;
-  }
-  @keyframes hintFade{ to{ opacity:0.7; } }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -327,12 +46,7 @@
 
 <nav>
   <div class="logo">DARK <span>PHOENIX</span></div>
-  <ul class="nav-links">
-    <li><a href="#news">News</a></li>
-    <li><a href="#gallery">Gallery</a></li>
-    <li><a href="#series">Series</a></li>
-    <li><a href="#songs">Songs</a></li>
-  </ul>
+  <ul class="nav-links" id="navLinks"></ul>
 </nav>
 
 <section class="hero">
@@ -374,56 +88,12 @@
   <div class="scroll-cue"></div>
 </section>
 
-<section id="news" class="news">
-  <div class="sec-head">
-    <span class="sec-num">01</span>
-    <h2>News</h2>
-    <div class="rule"></div>
-  </div>
-  <div class="news-list" id="newsGrid"></div>
+<section id="showcase" class="showcase">
+  <div class="tabbar" id="tabbar" aria-label="Pages"></div>
+  <div class="slider" id="sliderBox" aria-roledescription="carousel"></div>
 </section>
 
-<section id="gallery" class="gallery">
-  <div class="sec-head">
-    <span class="sec-num">02</span>
-    <h2>Gallery</h2>
-    <div class="rule"></div>
-  </div>
-  <p class="gallery-note">
-  Project Phoenix Team Member:
-  </p>
-  <div class="gallery-grid" id="galleryGrid"></div>
-</section>
-
-<section id="series" class="series">
-  <div class="sec-head">
-    <span class="sec-num">03</span>
-    <h2>Watch Series</h2>
-    <div class="rule"></div>
-  </div>
-  <div class="terminal">
-    <div class="terminal-bar">
-      <span style="background:#ff5f57"></span><span style="background:#febc2e"></span><span style="background:#28c840"></span>
-    </div>
-    <ul class="series-list" id="seriesList"></ul>
-    <div class="cursor-line">Season 2 Coming Soon...<span class="blink"></span></div>
-  </div>
-</section>
-
-<section id="songs" class="songs">
-  <div class="sec-head">
-    <span class="sec-num">04</span>
-    <h2>Songs</h2>
-    <div class="rule"></div>
-  </div>
-  <div class="terminal">
-    <div class="terminal-bar">
-      <span style="background:#ff5f57"></span><span style="background:#febc2e"></span><span style="background:#28c840"></span>
-    </div>
-    <ul class="series-list songs-list" id="songsList"></ul>
-    <div class="cursor-line">Full Album Coming Soon...<span class="blink"></span></div>
-  </div>
-</section>
+<div id="homeSections"></div>
 
 <footer>
   <div class="social-row">
@@ -442,207 +112,50 @@
 
 <script>
   // ---- intro / welcome screen ----
-  (function(){
-    const introEl = document.getElementById('intro-screen');
-    const introText = document.getElementById('introText');
-    const message = 'WELCOME TO PROJECT PHOENIX';
-
-    introText.innerHTML = message.split('').map((ch,i)=>
-      `<span style="animation-delay:${i*0.045}s">${ch === ' ' ? '&nbsp;' : ch}</span>`
-    ).join('');
-
-    let hasSpoken = false;
-    function pickFemaleVoice(voices){
-      const knownFemaleNames = ['female','zira','samantha','victoria','susan','fiona','moira','tessa','karen','google uk english female','google us english'];
-      let match = voices.find(v => /en/i.test(v.lang) && knownFemaleNames.some(n => v.name.toLowerCase().includes(n)));
-      if(match) return match;
-      match = voices.find(v => /en/i.test(v.lang));
-      return match || voices[0];
-    }
-    function speakWelcome(){
-      if(hasSpoken) return;
-      hasSpoken = true;
-      if('speechSynthesis' in window){
-        const utter = new SpeechSynthesisUtterance('Welcome to Project Phoenix');
-        utter.rate = 0.95;
-        utter.pitch = 1.25;
-        utter.volume = 1;
-        const voices = speechSynthesis.getVoices();
-        if(voices.length){
-          utter.voice = pickFemaleVoice(voices);
+    (function(){
+      const introEl = document.getElementById('intro-screen');
+      const introText = document.getElementById('introText');
+      const message = 'WELCOME TO PROJECT PHOENIX';
+  
+      introText.innerHTML = message.split('').map((ch,i)=>
+        `<span style="animation-delay:${i*0.045}s">${ch === ' ' ? '&nbsp;' : ch}</span>`
+      ).join('');
+  
+      let hasSpoken = false;
+      function pickFemaleVoice(voices){
+        const knownFemaleNames = ['female','zira','samantha','victoria','susan','fiona','moira','tessa','karen','google uk english female','google us english'];
+        let match = voices.find(v => /en/i.test(v.lang) && knownFemaleNames.some(n => v.name.toLowerCase().includes(n)));
+        if(match) return match;
+        match = voices.find(v => /en/i.test(v.lang));
+        return match || voices[0];
+      }
+      function speakWelcome(){
+        if(hasSpoken) return;
+        hasSpoken = true;
+        if('speechSynthesis' in window){
+          const utter = new SpeechSynthesisUtterance('Welcome to Project Phoenix');
+          utter.rate = 0.95;
+          utter.pitch = 1.25;
+          utter.volume = 1;
+          const voices = speechSynthesis.getVoices();
+          if(voices.length){
+            utter.voice = pickFemaleVoice(voices);
+          }
+          speechSynthesis.speak(utter);
         }
-        speechSynthesis.speak(utter);
       }
-    }
-
-    function dismissIntro(){
-      introEl.classList.add('hide');
-    }
-
-    window.addEventListener('load', speakWelcome);
-    introEl.addEventListener('click', () => { speakWelcome(); dismissIntro(); });
-
-    setTimeout(dismissIntro, 4200);
-  })();
-
-  const canvas = document.getElementById('ember-canvas');
-  const ctx = canvas.getContext('2d');
-  let W,H;
-  function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; }
-  resize(); addEventListener('resize', resize);
-
-  const embers = Array.from({length:55}, () => spawnEmber());
-  function spawnEmber(){
-    return {
-      x: Math.random()*W, y: H + Math.random()*100,
-      r: 0.6 + Math.random()*2.2, speed: 0.3 + Math.random()*0.9,
-      drift: (Math.random()-0.5)*0.6, hue: Math.random() > 0.25 ? 20 : 190,
-      alpha: 0.15 + Math.random()*0.55
-    };
-  }
-  function tick(){
-    ctx.clearRect(0,0,W,H);
-    embers.forEach(e=>{
-      e.y -= e.speed;
-      e.x += e.drift + Math.sin(e.y*0.01)*0.3;
-      if(e.y < -20){ Object.assign(e, spawnEmber(), {y: H+20}); }
-      ctx.beginPath();
-      ctx.fillStyle = e.hue === 20
-        ? `rgba(255,${90+Math.random()*40|0},30,${e.alpha})`
-        : `rgba(57,247,255,${e.alpha*0.6})`;
-      ctx.shadowColor = ctx.fillStyle;
-      ctx.shadowBlur = 6;
-      ctx.arc(e.x, e.y, e.r, 0, Math.PI*2);
-      ctx.fill();
-    });
-    requestAnimationFrame(tick);
-  }
-  tick();
-
-  // ---- content: loaded from data.json (edited via admin.html) ----
-  const DEFAULT_DATA = {
-    news:[{ title:'Season 2 — Coming Soon', img:'s2.png',
-      text:'DARK PHOENIX: GODFALL — Season 2 is Coming Soon.\nThe story continues as Shrikant’s quest for Vrinda’s resurrection awakens a new darkness.\nNew powers, deeper secrets, and a dangerous conflict with Arrow are about to begin.\nThe Godfall is coming — stay tuned for the next chapter.' }],
-    gallery:[
-      { title:'Shrikant', img:'1.png' }, { title:'Vrinda', img:'2.png' },
-      { title:'Professor Smith', img:'3.png' }, { title:'Arrow', img:'4.png' },
-      { title:'Mira', img:'5.png' }, { title:'Luciana', img:'6.png' }, { title:'Aman', img:'7.png' }
-    ],
-    series:[
-      { title:'Dark Phoenix Ka Punar Janam', genre:'Episode 1', link:'https://youtu.be/z_8upLnRWps' },
-      { title:'Pach Core Ka Rahasya', genre:'Episode 2', link:'https://youtu.be/EMSTWeN7AVE' },
-      { title:'Hydra Ki Talaash', genre:'Episode 3', link:'https://youtu.be/gCULg_GukWc' },
-      { title:'Thunderbird Ka Jagran', genre:'Episode 4', link:'https://youtu.be/5DUibqj-ChE' },
-      { title:'The Core of Destruction', genre:'Episode 5', link:'https://youtu.be/tPJE9atDQdI' }
-    ],
-    songs:[
-      { title:'Dark Phoenix Rising', genre:'Theme Song', file:'Dark Phoenix Rising.mp3' },
-      { title:'ARROW The Dark Hunter', genre:'Battle Theme', file:'ARROW The Dark Hunter.mp3' },
-      { title:'Rise of the Shrikant', genre:'Character Theme', file:'Rise of the Shrikant.mp3' }
-    ]
-  };
-
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const safeLink = u => /^https?:\/\//i.test(u || '') ? u : '#';
-
-  const newsGrid  = document.getElementById('newsGrid');
-  const grid      = document.getElementById('galleryGrid');
-  const list      = document.getElementById('seriesList');
-  const songsList = document.getElementById('songsList');
-
-  function renderSite(d){
-    // news
-    newsGrid.innerHTML = (d.news || []).map(n => `
-      <article class="news-item ${n.img ? '' : 'no-img'}">
-        ${n.img ? `<div class="art-card"><img src="${esc(encodeURI(n.img))}" alt="${esc(n.title)}"></div>` : ''}
-        <div class="news-body">
-          <h3>${esc(n.title)}</h3>
-          ${n.text ? `<p>${esc(n.text)}</p>` : ''}
-        </div>
-      </article>
-    `).join('');
-
-    // gallery
-    grid.innerHTML = (d.gallery || []).map(a => `
-      <div class="art-card">
-        <img src="${esc(encodeURI(a.img))}" alt="${esc(a.title)}">
-        <div class="tag">${esc(a.title)}</div>
-      </div>
-    `).join('');
-
-    // series
-    list.innerHTML = (d.series || []).map((s,i) => `
-      <li>
-        <span class="series-num">${String(i+1).padStart(2,'0')}</span>
-        <span class="series-title">${esc(s.title)}</span>
-        <span class="series-genre">${esc(s.genre)}</span>
-        <a class="series-status" href="${esc(safeLink(s.link))}" target="_blank" rel="noopener">WATCH NOW</a>
-      </li>
-    `).join('');
-
-    // songs
-    songsList.innerHTML = (d.songs || []).map((s,i) => `
-      <li>
-        <span class="series-num">${String(i+1).padStart(2,'0')}</span>
-        <span class="series-title">${esc(s.title)}</span>
-        <span class="series-genre">${esc(s.genre)}</span>
-        <a class="song-status" href="#" data-src="${esc(encodeURI(s.file))}">PLAY NOW</a>
-        <a class="song-download" href="${esc(encodeURI(s.file))}" download="${esc(s.file.split('/').pop())}">
-          <svg viewBox="0 0 24 24"><path d="M12 3v10.5m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
-          DOWNLOAD
-        </a>
-      </li>
-    `).join('');
-  }
-
-  fetch('data.json?t=' + Date.now(), { cache:'no-store' })
-    .then(r => r.ok ? r.json() : Promise.reject())
-    .then(renderSite)
-    .catch(() => renderSite(DEFAULT_DATA));
-
-  // A single audio player — only one song plays at a time; clicking a button toggles play/pause
-  (function(){
-    const audio = new Audio();
-    let activeBtn = null;
-
-    function resetBtn(btn){
-      btn.textContent = 'PLAY NOW';
-      btn.classList.remove('playing');
-    }
-
-    songsList.addEventListener('click', (e) => {
-      const btn = e.target.closest('.song-status');
-      if(!btn) return;
-      e.preventDefault();
-
-      const src = btn.getAttribute('data-src');
-
-      if(activeBtn === btn && !audio.paused){
-        audio.pause();
-        resetBtn(btn);
-        activeBtn = null;
-        return;
+  
+      function dismissIntro(){
+        introEl.classList.add('hide');
       }
-
-      if(activeBtn && activeBtn !== btn){
-        resetBtn(activeBtn);
-      }
-
-      audio.src = src;
-      audio.play().catch(() => {
-        btn.textContent = 'ERROR';
-        setTimeout(() => resetBtn(btn), 1500);
-      });
-      btn.textContent = 'PAUSE';
-      btn.classList.add('playing');
-      activeBtn = btn;
-    });
-
-    audio.addEventListener('ended', () => {
-      if(activeBtn) resetBtn(activeBtn);
-      activeBtn = null;
-    });
-  })();
+  
+      window.addEventListener('load', speakWelcome);
+      introEl.addEventListener('click', () => { speakWelcome(); dismissIntro(); });
+  
+      setTimeout(dismissIntro, 4200);
+    })();
 </script>
+<script src="app.js"></script>
+<script>DP.initHome();</script>
 </body>
 </html>

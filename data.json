@@ -1,135 +1,195 @@
 {
-  "news": [
+  "slider": [
     {
-      "id": "muw37ncjowpq",
-      "title": "Dark Phoenix: Godfall Coming on This 25th December",
-      "text": "The fall has begun.\n\nThe darkness returns in Dark Phoenix: Godfall. Season 2 brings 8 episodes, streaming from December 25, 2026, only on Midnight Tales Horror.\n\n#DarkPhoenix #Godfall #DarkPhoenixGodfall #Season2 #MidnightTalesHorror #8Episodes",
-      "img": "uploads/1791255393928-1000488642.png"
+      "id": "sl1",
+      "title": "Dark Phoenix: Godfall — 25 December",
+      "img": "uploads/1791255393928-1000488642.png",
+      "link": "https://youtube.com/@midnighttaleshorror?si=seiQ2TWGdXwef4VZ"
     },
     {
-      "id": "muljzi50fui0",
+      "id": "sl2",
       "title": "Dark Phoenix: Godfall Teaser",
-      "text": "The work of season 2 has started, I will try to upload the video on YouTube as soon as possible, stay active on the channel and our music channel has also arrived. Name: Marvel Buzz Studio.",
-      "img": "uploads/1790618439400-1000481436.png"
+      "img": "uploads/1790618439400-1000481436.png",
+      "link": "https://youtube.com/@midnighttaleshorror?si=seiQ2TWGdXwef4VZ"
     },
     {
-      "id": "n1",
-      "title": "Season 2 — Coming Soon...",
+      "id": "sl3",
+      "title": "Season 2 — Coming Soon",
       "img": "s2.png",
-      "text": "DARK PHOENIX: GODFALL — Season 2 is Coming Soon.\nThe story continues as Shrikant’s quest for Vrinda’s resurrection awakens a new darkness.\nNew powers, deeper secrets, and a dangerous conflict with Arrow are about to begin.\nThe Godfall is coming — stay tuned for the next chapter."
-    }
-  ],
-  "gallery": [
-    {
-      "id": "g1",
-      "title": "Shrikant",
-      "img": "1.png"
+      "link": "https://youtube.com/@midnighttaleshorror?si=seiQ2TWGdXwef4VZ"
     },
     {
-      "id": "g2",
-      "title": "Vrinda",
-      "img": "2.png"
-    },
-    {
-      "id": "g4",
-      "title": "Arrow",
-      "img": "4.png"
-    },
-    {
-      "id": "g5",
-      "title": "Mira",
-      "img": "5.png"
-    },
-    {
-      "id": "g3",
-      "title": "Professor Smith",
-      "img": "3.png"
-    },
-    {
-      "id": "g6",
-      "title": "Luciana",
-      "img": "6.png"
-    },
-    {
-      "id": "g7",
-      "title": "Aman",
-      "img": "7.png"
-    }
-  ],
-  "series": [
-    {
-      "id": "e1",
-      "title": "Dark Phoenix Ka Punar Janam",
-      "genre": "Episode 1",
+      "id": "sl4",
+      "title": "Watch Episode 1",
+      "img": "1.png",
       "link": "https://youtu.be/z_8upLnRWps"
-    },
-    {
-      "id": "e2",
-      "title": "Pach Core Ka Rahasya",
-      "genre": "Episode 2",
-      "link": "https://youtu.be/EMSTWeN7AVE"
-    },
-    {
-      "id": "e3",
-      "title": "Hydra Ki Talaash",
-      "genre": "Episode 3",
-      "link": "https://youtu.be/gCULg_GukWc"
-    },
-    {
-      "id": "e4",
-      "title": "Thunderbird Ka Jagran",
-      "genre": "Episode 4",
-      "link": "https://youtu.be/5DUibqj-ChE"
-    },
-    {
-      "id": "e5",
-      "title": "The Core of Destruction",
-      "genre": "Episode 5",
-      "link": "https://youtu.be/tPJE9atDQdI"
     }
   ],
-  "songs": [
+  "tabs": [
     {
-      "id": "s1",
-      "title": "Dark Phoenix Rising",
-      "genre": "Theme Song",
-      "file": "Dark Phoenix Rising.mp3"
+      "id": "news",
+      "label": "News",
+      "type": "news",
+      "home": true,
+      "note": "",
+      "footer": "",
+      "items": [
+        {
+          "id": "muw37ncjowpq",
+          "title": "Dark Phoenix: Godfall Coming on This 25th December",
+          "text": "The fall has begun.\n\nThe darkness returns in Dark Phoenix: Godfall. Season 2 brings 8 episodes, streaming from December 25, 2026, only on Midnight Tales Horror.\n\n#DarkPhoenix #Godfall #DarkPhoenixGodfall #Season2 #MidnightTalesHorror #8Episodes",
+          "img": "uploads/1791255393928-1000488642.png"
+        },
+        {
+          "id": "muljzi50fui0",
+          "title": "Dark Phoenix: Godfall Teaser",
+          "text": "The work of season 2 has started, I will try to upload the video on YouTube as soon as possible, stay active on the channel and our music channel has also arrived. Name: Marvel Buzz Studio.",
+          "img": "uploads/1790618439400-1000481436.png"
+        },
+        {
+          "id": "n1",
+          "title": "Season 2 — Coming Soon...",
+          "img": "s2.png",
+          "text": "DARK PHOENIX: GODFALL — Season 2 is Coming Soon.\nThe story continues as Shrikant’s quest for Vrinda’s resurrection awakens a new darkness.\nNew powers, deeper secrets, and a dangerous conflict with Arrow are about to begin.\nThe Godfall is coming — stay tuned for the next chapter."
+        }
+      ]
     },
     {
-      "id": "s2",
-      "title": "ARROW The Dark Hunter",
-      "genre": "Battle Theme",
-      "file": "ARROW The Dark Hunter.mp3"
+      "id": "gallery",
+      "label": "Gallery",
+      "type": "gallery",
+      "home": true,
+      "note": "Project Phoenix Team Member:",
+      "footer": "",
+      "items": [
+        {
+          "id": "g1",
+          "title": "Shrikant",
+          "img": "1.png"
+        },
+        {
+          "id": "g2",
+          "title": "Vrinda",
+          "img": "2.png"
+        },
+        {
+          "id": "g4",
+          "title": "Arrow",
+          "img": "4.png"
+        },
+        {
+          "id": "g5",
+          "title": "Mira",
+          "img": "5.png"
+        },
+        {
+          "id": "g3",
+          "title": "Professor Smith",
+          "img": "3.png"
+        },
+        {
+          "id": "g6",
+          "title": "Luciana",
+          "img": "6.png"
+        },
+        {
+          "id": "g7",
+          "title": "Aman",
+          "img": "7.png"
+        }
+      ]
     },
     {
-      "id": "s3",
-      "title": "Rise of the Shrikant",
-      "genre": "Character Theme",
-      "file": "Rise of the Shrikant.mp3"
+      "id": "series",
+      "label": "Watch Series",
+      "type": "series",
+      "home": true,
+      "note": "",
+      "footer": "Season 2 Coming Soon...",
+      "items": [
+        {
+          "id": "e1",
+          "title": "Dark Phoenix Ka Punar Janam",
+          "genre": "Episode 1",
+          "link": "https://youtu.be/z_8upLnRWps"
+        },
+        {
+          "id": "e2",
+          "title": "Pach Core Ka Rahasya",
+          "genre": "Episode 2",
+          "link": "https://youtu.be/EMSTWeN7AVE"
+        },
+        {
+          "id": "e3",
+          "title": "Hydra Ki Talaash",
+          "genre": "Episode 3",
+          "link": "https://youtu.be/gCULg_GukWc"
+        },
+        {
+          "id": "e4",
+          "title": "Thunderbird Ka Jagran",
+          "genre": "Episode 4",
+          "link": "https://youtu.be/5DUibqj-ChE"
+        },
+        {
+          "id": "e5",
+          "title": "The Core of Destruction",
+          "genre": "Episode 5",
+          "link": "https://youtu.be/tPJE9atDQdI"
+        }
+      ]
     },
     {
-      "id": "muh55c46g0ni",
-      "title": "Tumse Door",
-      "genre": "Arrow x Mira Love song",
-      "file": "uploads/1790351652490-tumse-door.mp3"
-    },
-    {
-      "id": "mui1jfgpvtid",
-      "title": "Adhoora Ishq",
-      "genre": "Shrikant x Vrinda Love song",
-      "file": "uploads/1790406057636-adhoora-ishq.mp3"
-    },
-    {
-      "id": "mum5lscrpcy0",
-      "title": "Adhoora Sa",
-      "genre": "Arrow x Mira Love song",
-      "file": "uploads/1790654750919-adhoora-sa.mp3"
-    },
-    {
-      "id": "mupnqzmct88z",
-      "title": "Andhera mera naam",
-      "genre": "Arrow Anthem",
-      "file": "uploads/1790866625218-andhera-mera-naam.mp3"
+      "id": "songs",
+      "label": "Songs",
+      "type": "songs",
+      "home": true,
+      "note": "",
+      "footer": "Full Album Coming Soon...",
+      "items": [
+        {
+          "id": "s1",
+          "title": "Dark Phoenix Rising",
+          "genre": "Theme Song",
+          "file": "Dark Phoenix Rising.mp3"
+        },
+        {
+          "id": "s2",
+          "title": "ARROW The Dark Hunter",
+          "genre": "Battle Theme",
+          "file": "ARROW The Dark Hunter.mp3"
+        },
+        {
+          "id": "s3",
+          "title": "Rise of the Shrikant",
+          "genre": "Character Theme",
+          "file": "Rise of the Shrikant.mp3"
+        },
+        {
+          "id": "muh55c46g0ni",
+          "title": "Tumse Door",
+          "genre": "Arrow x Mira Love song",
+          "file": "uploads/1790351652490-tumse-door.mp3"
+        },
+        {
+          "id": "mui1jfgpvtid",
+          "title": "Adhoora Ishq",
+          "genre": "Shrikant x Vrinda Love song",
+          "file": "uploads/1790406057636-adhoora-ishq.mp3"
+        },
+        {
+          "id": "mum5lscrpcy0",
+          "title": "Adhoora Sa",
+          "genre": "Arrow x Mira Love song",
+          "file": "uploads/1790654750919-adhoora-sa.mp3"
+        },
+        {
+          "id": "mupnqzmct88z",
+          "title": "Andhera mera naam",
+          "genre": "Arrow Anthem",
+          "file": "uploads/1790866625218-andhera-mera-naam.mp3"
+        }
+      ]
     }
   ]
 }

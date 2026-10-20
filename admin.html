@@ -25,7 +25,7 @@
     background-repeat:no-repeat;
   }
   h1,h2,h3,.brand{font-family:'Chakra Petch',sans-serif;}
-  button,input,textarea{font:inherit; color:inherit;}
+  button,input,textarea,select{font:inherit; color:inherit;}
   button{cursor:pointer;}
   :focus-visible{outline:2px solid var(--tech-1); outline-offset:2px;}
   .hidden{display:none !important;}
@@ -40,11 +40,14 @@
   .login-card h1 span{ color:var(--ember-1); }
   .login-card .sub{ color:var(--ink-dim); margin-bottom:22px; font-size:0.95rem; }
   label{ display:block; font-size:0.9rem; color:var(--ink-dim); margin:14px 0 6px; }
-  input[type=text], input[type=password], input[type=url], textarea{
+  input[type=text], input[type=password], input[type=url], textarea, select{
     width:100%; background:#0a0709; border:1px solid var(--line); border-radius:6px;
     padding:11px 12px; transition:border-color .2s;
   }
-  input:focus, textarea:focus{ border-color:var(--ember-1); outline:none; }
+  input:focus, textarea:focus, select:focus{ border-color:var(--ember-1); outline:none; }
+  select{ appearance:auto; color:var(--ink); }
+  select:disabled{ opacity:.6; }
+  select option{ background:#141014; }
   textarea{ min-height:140px; resize:vertical; }
   input[type=file]{ width:100%; font-size:0.9rem; color:var(--ink-dim); }
   .row2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -94,7 +97,7 @@
     display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:center;
     padding:12px; margin-bottom:10px; background:var(--panel); border:1px solid var(--line); border-radius:8px;
   }
-  .thumb{ width:64px; height:80px; border-radius:5px; object-fit:cover; background:#1a0e12; border:1px solid var(--line); }
+  .thumb{ width:80px; height:64px; border-radius:5px; object-fit:cover; background:#1a0e12; border:1px solid var(--line); }
   .badge{
     width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center;
     border:1px solid var(--tech-dim); color:var(--tech-1); font-family:'Chakra Petch',sans-serif; font-size:0.9rem;
@@ -230,15 +233,35 @@
   function unbusy(){ $('#busy').classList.add('hidden'); }
 
   /* ---------- default data (used only if data.json doesn't exist yet) ---------- */
-  const DEFAULT_DATA = { news:[], gallery:[], series:[], songs:[] };
+  const DEFAULT_DATA = { slider:[], tabs:[] };
   function normalize(d){
-    ['news','gallery','series','songs'].forEach(k => { if(!Array.isArray(d[k])) d[k] = []; d[k].forEach(it => { if(!it.id) it.id = uid(); }); });
+    d = d || {};
+    if(!Array.isArray(d.tabs)){   // old format -> tabs
+      d.tabs = [
+        { id:'news',    label:'News',         type:'news',    home:true, note:'', footer:'', items:d.news    || [] },
+        { id:'gallery', label:'Gallery',      type:'gallery', home:true, note:'', footer:'', items:d.gallery || [] },
+        { id:'series',  label:'Watch Series', type:'series',  home:true, note:'', footer:'', items:d.series  || [] },
+        { id:'songs',   label:'Songs',        type:'songs',   home:true, note:'', footer:'', items:d.songs   || [] }
+      ];
+      delete d.news; delete d.gallery; delete d.series; delete d.songs;
+    }
+    if(!Array.isArray(d.slider)) d.slider = [];
+    d.slider.forEach(it => { if(!it.id) it.id = uid(); });
+    d.tabs.forEach(t => {
+      if(!t.id) t.id = uid();
+      if(!Array.isArray(t.items)) t.items = [];
+      if(t.home === undefined) t.home = true;
+      t.items.forEach(it => { if(!it.id) it.id = uid(); });
+    });
     return d;
   }
+  const getTab  = (d, id) => d.tabs.find(t => t.id === id);
+  const listOf  = (d, key) => key === 'slider' ? d.slider : (getTab(d, key) || { items:[] }).items;
+  const typeOf  = (d, key) => key === 'slider' ? 'slider' : (getTab(d, key) || {}).type;
 
   /* ---------- GitHub API ---------- */
   let cfg = null;               // {token, owner, repo, branch}
-  const state = { data:null, tab:'news' };
+  const state = { data:null, tab:'slider' };
 
   function api(path, opts = {}){
     const base = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}`;
@@ -351,7 +374,8 @@
   }
   function referenced(path){
     const d = state.data;
-    return d.news.some(x => x.img === path) || d.gallery.some(x => x.img === path) || d.songs.some(x => x.file === path);
+    return d.slider.some(x => x.img === path) ||
+      d.tabs.some(t => t.items.some(x => x.img === path || x.file === path));
   }
   // Only files that were uploaded through this panel (uploads/…) are auto-deleted
   async function cleanupFiles(paths){
@@ -364,11 +388,19 @@
   const fileUrl = p => /^https?:\/\//i.test(p) ? p
     : `https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/${encodeURIComponent(cfg.branch)}/${encPath(p)}`;
 
-  /* ---------- section config ---------- */
+  /* ---------- item types ---------- */
   const TYPES = {
+    slider:{
+      label:'Slider', single:'slide', fileKey:'img',
+      note:'Images that slide automatically at the top of the main page (4 is a good number). Add a link and the image opens it when someone taps it.',
+      fields:[
+        { k:'img',   l:'Image (wide / landscape looks best)', t:'image', req:true },
+        { k:'title', l:'Caption (optional)', t:'text' },
+        { k:'link',  l:'Link — YouTube or any page (optional)', t:'url' }
+      ]
+    },
     news:{
       label:'News', single:'news post', fileKey:'img',
-      note:'A post with an image and text. Shows in the top section of the site.',
       fields:[
         { k:'title', l:'Title', t:'text', req:true },
         { k:'text',  l:'Text', t:'textarea' },
@@ -377,7 +409,6 @@
     },
     gallery:{
       label:'Gallery', single:'gallery image', fileKey:'img',
-      note:'Character image and name.',
       fields:[
         { k:'title', l:'Name', t:'text', req:true },
         { k:'img',   l:'Image', t:'image', req:true }
@@ -385,7 +416,6 @@
     },
     series:{
       label:'Series', single:'episode',
-      note:'Episode and its YouTube link, shown in Watch Series.',
       fields:[
         { k:'title', l:'Episode title', t:'text', req:true },
         { k:'genre', l:'Label (e.g. Episode 6)', t:'text' },
@@ -394,7 +424,6 @@
     },
     songs:{
       label:'Songs', single:'song', fileKey:'file',
-      note:'Upload an MP3 file. The site shows both Play and Download for it.',
       fields:[
         { k:'title', l:'Song title', t:'text', req:true },
         { k:'genre', l:'Genre (e.g. Theme Song)', t:'text' },
@@ -402,41 +431,85 @@
       ]
     }
   };
+  const TAB_TYPES = [
+    ['news',    'News — image + text posts'],
+    ['gallery', 'Gallery — image grid with names'],
+    ['series',  'Series — list with video links'],
+    ['songs',   'Songs — MP3 play / download']
+  ];
+  const TYPE_NAME = { news:'News', gallery:'Gallery', series:'Series', songs:'Songs' };
 
   /* ---------- render ---------- */
   function render(){
     const d = state.data; if(!d) return;
-    $('#tabs').innerHTML = Object.keys(TYPES).map(k =>
-      `<button class="tab ${state.tab === k ? 'active' : ''}" role="tab" data-tab="${k}">${TYPES[k].label}<span class="count">${d[k].length}</span></button>`
-    ).join('');
+    if(state.tab !== 'slider' && state.tab !== '__tabs' && !getTab(d, state.tab)) state.tab = 'slider';
 
-    const t = state.tab, T = TYPES[t], items = d[t];
+    $('#tabs').innerHTML =
+      `<button class="tab ${state.tab === 'slider' ? 'active' : ''}" role="tab" data-tab="slider">Slider<span class="count">${d.slider.length}</span></button>` +
+      d.tabs.map(t => `<button class="tab ${state.tab === t.id ? 'active' : ''}" role="tab" data-tab="${esc(t.id)}">${esc(t.label)}<span class="count">${t.items.length}</span></button>`).join('') +
+      `<button class="tab ${state.tab === '__tabs' ? 'active' : ''}" role="tab" data-tab="__tabs">⚙ Tabs</button>`;
+
+    $('#panel').innerHTML = state.tab === '__tabs' ? renderTabsManager(d) : renderItems(d, state.tab);
+  }
+
+  function renderTabsManager(d){
     let html = `
       <div class="section-head">
-        <h2>${T.label}</h2>
+        <h2>Tabs (pages)</h2>
+        <button class="btn primary" data-act="addtab">+ New tab</button>
+      </div>
+      <p class="section-note">Each tab is its own page on the site and appears in the tab bar above the slider. Pick a type when you create it — then open the tab here at the top to upload its content.</p>`;
+    if(!d.tabs.length) html += `<div class="empty">No tabs yet. Tap “+ New tab”.</div>`;
+    d.tabs.forEach((t, i) => {
+      html += `
+        <div class="item" data-id="${esc(t.id)}">
+          <div class="badge">${String(i + 1).padStart(2, '0')}</div>
+          <div class="info"><div class="t">${esc(t.label)}</div>
+            <div class="s">${TYPE_NAME[t.type] || t.type} • ${t.items.length} item(s) • ${t.home ? 'shown on main page too' : 'own page only'}</div></div>
+          <div class="acts">
+            <button class="btn" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
+            <button class="btn" data-act="down" ${i === d.tabs.length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
+            <span class="spacer"></span>
+            <button class="btn" data-act="open">Open</button>
+            <button class="btn" data-act="edittab">Edit</button>
+            <button class="btn danger" data-act="deltab">Delete</button>
+          </div>
+        </div>`;
+    });
+    return html;
+  }
+
+  function renderItems(d, key){
+    const type = typeOf(d, key), T = TYPES[type], items = listOf(d, key);
+    const tab = key === 'slider' ? null : getTab(d, key);
+    const title = tab ? tab.label : T.label;
+    const note = key === 'slider' ? T.note
+      : `Content of the “${esc(tab.label)}” page (${TYPE_NAME[tab.type]}).`;
+    let html = `
+      <div class="section-head">
+        <h2>${esc(title)}</h2>
         <button class="btn primary" data-act="add">+ New ${T.single}</button>
       </div>
-      <p class="section-note">${T.note}</p>`;
-
-    if(!items.length){
-      html += `<div class="empty">Nothing here yet. Tap the button above to add one.</div>`;
-    }
+      <p class="section-note">${note}</p>`;
+    if(!items.length) html += `<div class="empty">Nothing here yet. Tap the button above to add one.</div>`;
     items.forEach((it, i) => {
-      let lead, title = esc(it.title), sub = '';
-      if(t === 'news' || t === 'gallery'){
+      let lead, sub = '';
+      if(type === 'news' || type === 'gallery' || type === 'slider'){
         lead = it.img ? `<img class="thumb" loading="lazy" src="${esc(fileUrl(it.img))}" alt="">` : `<div class="badge">—</div>`;
-        sub = t === 'news' ? esc((it.text || '').replace(/\s+/g, ' ').slice(0, 80)) : '';
-      }else if(t === 'series'){
+        sub = type === 'news' ? esc((it.text || '').replace(/\s+/g, ' ').slice(0, 80))
+            : type === 'slider' ? esc(it.link || 'No link') : '';
+      }else if(type === 'series'){
         lead = `<div class="badge">${String(i + 1).padStart(2, '0')}</div>`;
         sub = esc([it.genre, it.link].filter(Boolean).join(' • '));
       }else{
         lead = `<div class="badge">${String(i + 1).padStart(2, '0')}</div>`;
         sub = esc([it.genre, (it.file || '').split('/').pop()].filter(Boolean).join(' • '));
       }
+      const label = it.title || (type === 'slider' ? `Slide ${i + 1}` : '');
       html += `
         <div class="item" data-id="${esc(it.id)}">
           ${lead}
-          <div class="info"><div class="t">${title}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>
+          <div class="info"><div class="t">${esc(label)}</div>${sub ? `<div class="s">${sub}</div>` : ''}</div>
           <div class="acts">
             <button class="btn" data-act="up" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
             <button class="btn" data-act="down" ${i === items.length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
@@ -446,16 +519,16 @@
           </div>
         </div>`;
     });
-    $('#panel').innerHTML = html;
+    return html;
   }
 
-  /* ---------- modal (add / edit) ---------- */
-  function openForm(type, id){
-    const T = TYPES[type];
-    const item = id ? state.data[type].find(x => x.id === id) : null;
+  /* ---------- modal: add / edit an item ---------- */
+  function openForm(key, id){
+    const type = typeOf(state.data, key), T = TYPES[type];
+    const item = id ? listOf(state.data, key).find(x => x.id === id) : null;
     const fieldsHtml = T.fields.map(f => {
       const val = item ? (item[f.k] || '') : '';
-      const star = f.req && !(f.t === 'image' || f.t === 'audio' ? item : false) ? ' <span class="req">*</span>' : '';
+      const star = f.req && !((f.t === 'image' || f.t === 'audio') && item) ? ' <span class="req">*</span>' : '';
       if(f.t === 'textarea') return `<label for="f_${f.k}">${f.l}</label><textarea id="f_${f.k}" name="${f.k}">${esc(val)}</textarea>`;
       if(f.t === 'image' || f.t === 'audio'){
         const cur = item && val
@@ -481,16 +554,16 @@
           </div>
         </form>
       </div>`;
-    const first = $('#itemForm input, #itemForm textarea'); if(first) first.focus();
+    const first = $('#itemForm input:not([type=file]), #itemForm textarea'); if(first) first.focus();
 
     $('#cancelForm').onclick = closeForm;
     $('#overlay').addEventListener('mousedown', e => { if(e.target.id === 'overlay') closeForm(); });
-    $('#itemForm').onsubmit = e => { e.preventDefault(); submitForm(type, item); };
+    $('#itemForm').onsubmit = e => { e.preventDefault(); submitForm(key, item); };
   }
   function closeForm(){ $('#modalRoot').innerHTML = ''; }
 
-  async function submitForm(type, item){
-    const T = TYPES[type], err = $('#formErr'); err.textContent = '';
+  async function submitForm(key, item){
+    const type = typeOf(state.data, key), T = TYPES[type], err = $('#formErr'); err.textContent = '';
     const vals = {}, files = {};
     for(const f of T.fields){
       const el = $('#f_' + f.k);
@@ -505,7 +578,7 @@
       }else{
         vals[f.k] = el.value.trim();
         if(f.req && !vals[f.k]){ err.textContent = `Please enter "${f.l}".`; return; }
-        if(f.t === 'url' && !/^https?:\/\//i.test(vals[f.k])){ err.textContent = 'Link must start with http:// or https://'; return; }
+        if(f.t === 'url' && vals[f.k] && !/^https?:\/\//i.test(vals[f.k])){ err.textContent = 'Link must start with http:// or https://'; return; }
       }
     }
     const big = Object.values(files).find(f => f.size > 25 * 1024 * 1024);
@@ -521,7 +594,7 @@
       }
       busy('Saving…');
       await saveData(d => {
-        const list = d[type];
+        const list = listOf(d, key);
         if(item){
           const it = list.find(x => x.id === item.id);
           if(!it) throw new Error('This item no longer exists (deleted elsewhere?)');
@@ -530,7 +603,7 @@
         }else{
           list.push({ id:newId, ...vals, ...uploaded });
         }
-      }, `Admin: ${item ? 'edit' : 'add'} ${type}`);
+      }, `Admin: ${item ? 'edit' : 'add'} ${key}`);
       if(oldPaths.length){ busy('Removing old file…'); await cleanupFiles(oldPaths); }
       toast('Saved ✓');
     }catch(e){
@@ -539,30 +612,99 @@
     }finally{ unbusy(); }
   }
 
-  /* ---------- panel actions ---------- */
-  async function move(type, id, dir){
-    busy('Saving…');
+  /* ---------- modal: add / edit a tab ---------- */
+  function openTabForm(id){
+    const tab = id ? getTab(state.data, id) : null;
+    $('#modalRoot').innerHTML = `
+      <div class="overlay" id="overlay">
+        <form class="modal" id="tabForm" novalidate>
+          <h3>${tab ? 'Edit tab' : 'New tab'}</h3>
+          <label for="t_label">Tab name <span class="req">*</span></label>
+          <input type="text" id="t_label" value="${esc(tab ? tab.label : '')}" placeholder="e.g. Behind the Scenes">
+          <label for="t_type">Tab type</label>
+          <select id="t_type" ${tab ? 'disabled' : ''}>
+            ${TAB_TYPES.map(([v, l]) => `<option value="${v}" ${tab && tab.type === v ? 'selected' : ''}>${l}</option>`).join('')}
+          </select>
+          ${tab ? '<p class="hint">The type is fixed after the tab is created.</p>' : ''}
+          <label for="t_note">Short text under the heading (optional)</label>
+          <input type="text" id="t_note" value="${esc(tab ? tab.note || '' : '')}">
+          <label for="t_footer">Last line (optional — shown at the bottom of Series / Songs lists)</label>
+          <input type="text" id="t_footer" value="${esc(tab ? tab.footer || '' : '')}" placeholder="e.g. Season 2 Coming Soon...">
+          <label class="check"><input type="checkbox" id="t_home" ${!tab || tab.home ? 'checked' : ''}> Also show this section on the main page</label>
+          <p class="err" id="formErr"></p>
+          <div class="actions">
+            <button type="button" class="btn" id="cancelForm">Cancel</button>
+            <button type="submit" class="btn primary">Save</button>
+          </div>
+        </form>
+      </div>`;
+    $('#t_label').focus();
+    $('#cancelForm').onclick = closeForm;
+    $('#overlay').addEventListener('mousedown', e => { if(e.target.id === 'overlay') closeForm(); });
+    $('#tabForm').onsubmit = e => { e.preventDefault(); submitTabForm(tab); };
+  }
+  async function submitTabForm(tab){
+    const label = $('#t_label').value.trim();
+    if(!label){ $('#formErr').textContent = 'Please enter a tab name.'; return; }
+    const vals = { label, note:$('#t_note').value.trim(), footer:$('#t_footer').value.trim(), home:$('#t_home').checked };
+    const type = $('#t_type').value;
+    const base = slug(label); const newId = (base === 'file' ? 'tab' : base) + '-' + uid().slice(-4);
+    closeForm(); busy('Saving…');
     try{
       await saveData(d => {
-        const l = d[type], i = l.findIndex(x => x.id === id), j = i + dir;
-        if(i < 0 || j < 0 || j >= l.length) return;
-        [l[i], l[j]] = [l[j], l[i]];
-      }, `Admin: reorder ${type}`);
-    }catch(e){ toast(isNetworkError(e) ? networkHelpWith(e) : e.message, true); }
+        if(tab){
+          const t = getTab(d, tab.id); if(!t) throw new Error('This tab no longer exists');
+          Object.assign(t, vals);
+        }else{
+          d.tabs.push({ id:newId, type, ...vals, items:[] });
+        }
+      }, `Admin: ${tab ? 'edit' : 'add'} tab`);
+      if(!tab){ state.tab = newId; render(); toast('Tab created ✓ — now add its content'); }
+      else toast('Saved ✓');
+    }catch(e){ toast(isNetworkError(e) ? networkHelpWith(e) : (e.message || 'Something went wrong'), true); }
     finally{ unbusy(); }
   }
-  async function remove(type, id){
-    const it = state.data[type].find(x => x.id === id); if(!it) return;
-    if(!confirm(`Delete "${it.title}"? This cannot be undone.`)) return;
+  async function removeTab(id){
+    const t = getTab(state.data, id); if(!t) return;
+    if(!confirm(`Delete the tab "${t.label}" and everything inside it (${t.items.length} item(s))? This cannot be undone.`)) return;
     busy('Deleting…');
     const paths = [];
     try{
       await saveData(d => {
-        const l = d[type], i = l.findIndex(x => x.id === id);
+        const i = d.tabs.findIndex(x => x.id === id); if(i < 0) return;
+        const [gone] = d.tabs.splice(i, 1);
+        gone.items.forEach(it => paths.push(it.img, it.file));
+      }, 'Admin: delete tab');
+      await cleanupFiles(paths);
+      toast('Deleted ✓');
+    }catch(e){ toast(isNetworkError(e) ? networkHelpWith(e) : e.message, true); }
+    finally{ unbusy(); }
+  }
+
+  /* ---------- panel actions ---------- */
+  async function move(key, id, dir){   // key: 'slider' | tab id | '__tabs' (moves whole tabs)
+    busy('Saving…');
+    try{
+      await saveData(d => {
+        const l = key === '__tabs' ? d.tabs : listOf(d, key), i = l.findIndex(x => x.id === id), j = i + dir;
+        if(i < 0 || j < 0 || j >= l.length) return;
+        [l[i], l[j]] = [l[j], l[i]];
+      }, `Admin: reorder ${key}`);
+    }catch(e){ toast(isNetworkError(e) ? networkHelpWith(e) : e.message, true); }
+    finally{ unbusy(); }
+  }
+  async function remove(key, id){
+    const it = listOf(state.data, key).find(x => x.id === id); if(!it) return;
+    if(!confirm(`Delete "${it.title || 'this slide'}"? This cannot be undone.`)) return;
+    busy('Deleting…');
+    const paths = [];
+    try{
+      await saveData(d => {
+        const l = listOf(d, key), i = l.findIndex(x => x.id === id);
         if(i < 0) return;
         const [gone] = l.splice(i, 1);
         paths.push(gone.img, gone.file);
-      }, `Admin: delete ${type}`);
+      }, `Admin: delete ${key}`);
       await cleanupFiles(paths);
       toast('Deleted ✓');
     }catch(e){ toast(isNetworkError(e) ? networkHelpWith(e) : e.message, true); }
@@ -581,6 +723,10 @@
     else if(act === 'del') remove(t, id);
     else if(act === 'up') move(t, id, -1);
     else if(act === 'down') move(t, id, 1);
+    else if(act === 'addtab') openTabForm();
+    else if(act === 'edittab') openTabForm(id);
+    else if(act === 'deltab') removeTab(id);
+    else if(act === 'open'){ state.tab = id; render(); }
   });
   document.addEventListener('keydown', e => { if(e.key === 'Escape' && $('#modalRoot').innerHTML) closeForm(); });
 
