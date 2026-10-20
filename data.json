@@ -87,7 +87,7 @@
     },
     {
       "id": "series",
-      "label": "Watch Series",
+      "label": "Series",
       "type": "series",
       "note": "",
       "footer": "",
